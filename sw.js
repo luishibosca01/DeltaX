@@ -5,9 +5,9 @@ const CACHE_NAME = `deltaf-cache-${CACHE_VERSION}`;
 
 // Archivos a cachear
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json'
+  './',
+  './index.html', 
+  './manifest.json'
 ];
 
 // Instalación del Service Worker
