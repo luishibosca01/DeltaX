@@ -4,7 +4,6 @@
 (function() {
   'use strict';
 
-  // Verificar si el navegador soporta Service Workers
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       registerServiceWorker();
@@ -12,32 +11,45 @@
   }
 
   function registerServiceWorker() {
-    navigator.serviceWorker.register('/sw.js')
+    // Usar ruta relativa
+    navigator.serviceWorker.register('sw.js', { 
+      scope: './',
+      updateViaCache: 'none' // ¡Importante! Evita cache del SW
+    })
       .then((registration) => {
         console.log('[App] Service Worker registrado:', registration);
 
-        // Verificar actualizaciones cada 60 segundos
+        // Verificar actualizaciones más frecuentemente
         setInterval(() => {
           registration.update();
-        }, 60000);
+        }, 30000); // Cada 30 segundos
 
-        // Detectar cuando hay un nuevo Service Worker esperando
+        // Detectar nuevo SW
         registration.addEventListener('updatefound', () => {
           const newWorker = registration.installing;
-          console.log('[App] Nueva versión encontrada, instalando...');
+          console.log('[App] Nueva versión encontrada');
 
           newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              // Hay una nueva versión disponible
-              console.log('[App] Nueva versión lista');
-              showUpdateNotification(newWorker);
+            if (newWorker.state === 'installed') {
+              if (navigator.serviceWorker.controller) {
+                // Hay una actualización
+                console.log('[App] Nueva versión disponible');
+                showUpdateNotification(newWorker);
+              } else {
+                // Primera instalación
+                console.log('[App] Primera instalación completada');
+              }
             }
           });
         });
+
+        // Verificar inmediatamente si hay actualizaciones
+        registration.update();
       })
       .catch((error) => {
         console.error('[App] Error al registrar Service Worker:', error);
       });
+  }
 
     // Escuchar mensajes del Service Worker
     navigator.serviceWorker.addEventListener('message', (event) => {
