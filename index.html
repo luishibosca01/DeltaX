@@ -460,7 +460,6 @@
         input:focus,
         select:focus {
             outline: none;
-            border-color: var(--c-blue);
         }
 
         .form-actions {
@@ -482,6 +481,7 @@
             border: 1px solid var(--border);
             border-radius: var(--radius);
             padding: 0.75rem;
+            margin-bottom: 0.75rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -495,6 +495,7 @@
 
         .factura-info {
             flex: 1;
+            cursor: pointer;
         }
 
         .factura-monto {
@@ -629,7 +630,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.3);
-            z-index: 20;
+            z-index: 100;
         }
 
         .menu-overlay.active {
@@ -762,20 +763,37 @@
         }
 
         .resumen-label {
-            font-size: 0.875rem;
             color: var(--text-muted);
         }
 
         .resumen-monto {
-            padding: 1rem;
-            border-radius: var(--radius);
-            text-align: center;
-            margin-bottom: 1rem;
+            cursor: pointer
+        }
+
+        .resumen-titulo {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #ecf0f1;
+            text-align: left;
         }
 
         .resumen-monto .resumen-valor {
-            font-size: 2rem;
-            color: var(--c-white);
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            text-align: left;
+        }
+
+        .resumen-fecha {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-top: 1rem;
+            text-align: right;
+        }
+
+        .resumen-monto .resumen-label {
+            color: var(--text-muted);
+            text-align: left;
         }
 
         /* --- Estilos para colapso de facturas --- */
@@ -784,142 +802,70 @@
             transition: all 0.3s;
         }
 
-        .servicio-item.expanded {
-            background: var(--input-bg);
+        /* Estadísticas */
+        .estadisticas-selector-container {
+            margin-bottom: 1rem;
         }
 
-        .facturas-colapso {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
-        }
-
-        .facturas-colapso.active {
-            max-height: 2000px;
-            transition: max-height 0.5s ease-in;
-        }
-
-        .factura-item-inline {
-            padding: 0.75rem;
-            margin: 0.5rem 0;
-            background: var(--bg-card);
-            border-radius: 8px;
+        .estadisticas-selector {
+            width: 100%;
             border: 1px solid var(--border);
+            background: var(--input-bg);
+            cursor: pointer;
+        }
+
+        .estadisticas-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .estadistica-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 0.5rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+
         }
 
-        .factura-item-inline:hover {
-            background: var(--input-bg);
-        }
-
-        .factura-info-inline {
-            flex: 1;
-            cursor: pointer;
-        }
-
-        .factura-monto-inline {
-            font-weight: 600;
-            font-size: 0.9rem;
+        .estadistica-label {
             color: var(--text-main);
         }
 
-        .factura-fecha-inline {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-top: 0.25rem;
-        }
-
-        .factura-estado-inline {
-            font-size: 0.75rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            margin-top: 0.25rem;
-            display: inline-block;
-        }
-
-        .factura-estado-inline.pagada {
-            background: rgba(96, 172, 148, 0.1);
-            color: var(--c-green);
-        }
-
-        .factura-actions-inline {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        }
-
-        .btn-agregar-factura-inline {
-            width: 100%;
-            padding: 0.75rem;
-            margin-top: 0.5rem;
-            background: var(--c-green);
-            color: var(--text-inv);
-            border: none;
-            border-radius: var(--radius);
+        .estadistica-valor {
+            font-size: 0.875rem;
             font-weight: 600;
+            color: var(--text-main);
+        }
+
+        /* Estado de factura */
+        .factura-estado-pagado {
+            color: var(--c-green);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .factura-estado-pendiente {
+            color: var(--c-gold);
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+
+        .factura-info-clickable {
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
         }
 
-        .btn-agregar-factura-inline:active {
-            transform: scale(0.98);
+        .mensaje-sin-facturas {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 2rem 0;
         }
 
-        /* --- Botón flotante agregar factura --- */
-        .btn-add-factura {
-            position: absolute;
-            top: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--c-green);
-            color: var(--text-inv);
-            font-size: 1.5rem;
-            font-weight: 300;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-            z-index: 30;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .btn-add-factura:hover {
-            transform: translateX(-50%) scale(1.05);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        .btn-add-factura:active {
-            transform: translateX(-50%) scale(0.95);
-        }
-
-        .servicio-wrapper {
-            position: relative;
-        }
-
-        .servicio-item {
-            position: relative;
-            z-index: 1;
-        }
-
-        .facturas-colapso {
-            position: relative;
-            z-index: 10;
-        }
-
-        .facturas-colapso-content {
-            padding-top: 3rem;
-            border-radius: var(--radius);
-            position: relative;
+        .servicio-estado.estado-sin-facturas {
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 0.8rem;
         }
 
         /* --- codigo css --- */
@@ -993,7 +939,7 @@
                 </svg>
                 Cerrar menú
             </button>
-            <div class="menu-version">Version 0.15</div>
+            <div class="menu-version">Version 0.16</div> <!-- DeltaF -->
         </div>
     </div>
 
@@ -1004,12 +950,6 @@
             <div class="sidebar-left">
                 <!-- Tarjeta de Estado (incluye fecha) -->
                 <div class="card">
-                    <div style="text-align: center; padding-bottom: 1rem; border-bottom: 1px solid var(--border);">
-                        <div style="font-size: 1.125rem; font-weight: 600; color: var(--text-main);" id="fecha-dia">
-                            Sábado</div>
-                        <div style="font-size: 0.875rem; color: var(--text-muted);" id="fecha-texto">31 de Enero de 2026
-                        </div>
-                    </div>
                     <div id="resumen-mes"></div>
                 </div>
 
@@ -1179,6 +1119,32 @@
         </div>
     </div>
 
+    <!-- Modal Facturas del Servicio -->
+    <div class="modal" id="modal-facturas-servicio">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-facturas-titulo">Facturas del Servicio</h3>
+                <button class="modal-close" onclick="app.cerrarModal('modal-facturas-servicio')">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path class="icon-line" d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <button type="button" class="btn-success"
+                onclick="app.abrirModalFactura(document.getElementById('modal-facturas-servicio').dataset.servicioId, null)">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <path class="icon-line" d="M12 5v14M5 12h14" />
+                </svg>
+                Agregar Factura
+            </button>
+
+            <div class="facturas-lista custom-scroll" id="lista-facturas-modal">
+                <!-- Las facturas se cargarán aquí -->
+            </div>
+        </div>
+    </div>
+
     <!-- Toast de notificaciones -->
     <div class="toast" id="toast"></div>
 
@@ -1221,14 +1187,10 @@
             init() {
                 this.cargarDatos();
                 this.cargarTema();
-                this.actualizarFecha();
                 this.actualizarResumenMes();
                 this.renderServicios();
                 this.setupEventListeners();
                 this.actualizarBotonesHistorial();
-
-                // Actualizar fecha cada minuto
-                setInterval(() => this.actualizarFecha(), 60000);
             }
 
             setupEventListeners() {
@@ -1299,21 +1261,6 @@
             // GESTIÓN DE FECHA
             // ========================================
 
-            actualizarFecha() {
-                const ahora = new Date();
-                const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-                const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-                    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-
-                const dia = ahora.getDate();
-                const diaSemana = dias[ahora.getDay()];
-                const mes = meses[ahora.getMonth()];
-                const año = ahora.getFullYear();
-
-                document.getElementById('fecha-dia').textContent = diaSemana;
-                document.getElementById('fecha-texto').textContent = `${dia} de ${mes} de ${año}`;
-            }
-
             actualizarResumenMes() {
                 const mesActual = new Date().getMonth();
                 const añoActual = new Date().getFullYear();
@@ -1366,11 +1313,17 @@
             }
 
             mostrarPendienteEnResumen() {
+                const fechaHoy = new Date();
+                const opciones = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+                const fechaFormateada = fechaHoy.toLocaleDateString('es-AR', opciones);
+
                 const resumenHTML = `
-        <div class="resumen-monto" style="margin-top: 1rem; cursor: pointer;" id="resumen-toggle">
+        <div class="resumen-monto" id="resumen-toggle">
+            <div class="resumen-titulo">Resumen de pagos</div>
             <div class="resumen-valor">${this.formatearMoneda(this.datosResumen.pendiente)}</div>
             <div class="resumen-label">Pendiente de pago</div>
-        </div>
+        <div class="resumen-fecha">${fechaFormateada}</div>
+            </div>
     `;
                 document.getElementById('resumen-mes').innerHTML = resumenHTML;
                 this.mostrandoPagadoMes = false;
@@ -1382,10 +1335,16 @@
             }
 
             mostrarPagadoEnResumen() {
+                const fechaHoy = new Date();
+                const opciones = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+                const fechaFormateada = fechaHoy.toLocaleDateString('es-AR', opciones);
+
                 const resumenHTML = `
-        <div class="resumen-monto" style="margin-top: 1rem; cursor: pointer;" id="resumen-toggle">
+        <div class="resumen-monto" id="resumen-toggle">
+            <div class="resumen-titulo">Resumen de pagos</div>
             <div class="resumen-valor">${this.formatearMoneda(this.datosResumen.pagadoMes)}</div>
-            <div class="resumen-label">Pagado este mes</div>
+            <div class="resumen-label">Pagados Este Mes</div>
+            <div class="resumen-fecha">${fechaFormateada}</div>
         </div>
     `;
                 document.getElementById('resumen-mes').innerHTML = resumenHTML;
@@ -1457,34 +1416,34 @@
                 });
 
                 const estadisticasHTML = `
-        <div style="margin-bottom: 1rem;">
-            <select id="select-mes-estadisticas" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius); font-size: 0.875rem; background: var(--bg-card); color: var(--text-main); cursor: pointer;">
-                ${this.generarOpcionesMeses(mesSeleccionado, añoSeleccionado)}
-            </select>
+    <div class="estadisticas-selector-container">
+        <select id="select-mes-estadisticas" class="estadisticas-selector">
+            ${this.generarOpcionesMeses(mesSeleccionado, añoSeleccionado)}
+        </select>
+    </div>
+    <div class="estadisticas-lista">
+        <div class="estadistica-item">
+            <span class="estadistica-label">Total Pagado</span>
+            <span class="estadistica-valor">${this.formatearMoneda(totalMes)}</span>
         </div>
-        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;">
-                <span style="font-size: 0.875rem; color: var(--text-muted);">Total</span>
-                <span style="font-size: 0.875rem; font-weight: 600; color: var(--text-main);">${this.formatearMoneda(totalMes)}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid var(--border);">
-                <span style="font-size: 0.875rem; color: var(--text-muted);">Facturas</span>
-                <span style="font-size: 0.875rem; font-weight: 600; color: var(--text-main);">${cantidadPendientes + cantidadPagadas}</span>
-            </div>    
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid var(--border);">
-                <span style="font-size: 0.875rem; color: var(--text-muted);">Pendientes</span>
-                <span style="font-size: 0.875rem; font-weight: 600; color: var(--text-main);">${cantidadPendientes}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid var(--border);">
-                <span style="font-size: 0.875rem; color: var(--text-muted);">Pagadas</span>
-                <span style="font-size: 0.875rem; font-weight: 600; color: var(--text-main);">${cantidadPagadas}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid var(--border);">
-                <span style="font-size: 0.875rem; color: var(--text-muted);">Vencidas</span>
-                <span style="font-size: 0.875rem; font-weight: 600; color: var(--text-main);">${cantidadVencidas}</span>
-            </div>                    
+        <div class="estadistica-item">
+            <span class="estadistica-label">Facturas</span>
+            <span class="estadistica-valor">${cantidadPendientes + cantidadPagadas}</span>
+        </div>    
+        <div class="estadistica-item">
+            <span class="estadistica-label">Pendientes</span>
+            <span class="estadistica-valor">${cantidadPendientes}</span>
         </div>
-    `;
+        <div class="estadistica-item">
+            <span class="estadistica-label">Pagadas</span>
+            <span class="estadistica-valor">${cantidadPagadas}</span>
+        </div>
+        <div class="estadistica-item">
+            <span class="estadistica-label">Vencidas</span>
+            <span class="estadistica-valor">${cantidadVencidas}</span>
+        </div>                    
+    </div>
+`;
 
                 document.getElementById('estadisticas-mes').innerHTML = estadisticasHTML;
 
@@ -1539,13 +1498,6 @@
             renderServicios() {
                 // Guardar posición de scroll antes de actualizar
                 const scrollPos = window.scrollY || window.pageYOffset;
-
-                // Guardar el estado de los colapsos abiertos
-                const colapsosAbiertos = [];
-                document.querySelectorAll('.facturas-colapso.active').forEach(colapso => {
-                    const servicioId = colapso.id.replace('facturas-', '');
-                    colapsosAbiertos.push(servicioId);
-                });
 
                 const lista = document.getElementById('servicios-lista');
 
@@ -1608,11 +1560,14 @@
                                 estado = `Vence ${fechaTexto}`;
                                 claseEstado = 'lejano';
                             }
+
                         }
                     }
-
-                    // Generar HTML de facturas
-                    const facturasHTML = this.generarFacturasHTML(servicio);
+                    else {
+                        // Cuando no hay facturas
+                        estado = 'Sin facturas';
+                        claseEstado = 'sin-facturas';
+                    }
 
                     return `
     <div class="servicio-wrapper" data-id="${servicio.id}">
@@ -1623,14 +1578,6 @@
                 ${fechaTexto ? `<span class="servicio-fecha">${fechaTexto}</span>` : ''}
             </div>
             ${estado ? `<span class="servicio-estado estado-${claseEstado}">${estado}</span>` : ''}
-        </div>
-        <div class="facturas-colapso" id="facturas-${servicio.id}">
-            <div class="facturas-colapso-content">
-                ${facturasHTML}
-                <button class="btn-add-factura" onclick="event.stopPropagation(); app.abrirModalFactura('${servicio.id}', null)" title="Agregar factura">
-                    +
-                </button>
-            </div>
         </div>
     </div>
 `;
@@ -1643,7 +1590,7 @@
                         if (e.target.closest('button')) return;
 
                         const id = item.dataset.id;
-                        this.toggleFacturasColapso(id);
+                        this.abrirModalFacturasServicio(id);
                     });
 
                     // Long press para editar (móvil)
@@ -1669,27 +1616,12 @@
                     });
                 });
 
-                // Restaurar posición de scroll y colapsos abiertos
+                // Restaurar posición de scroll
                 requestAnimationFrame(() => {
                     window.scrollTo(0, scrollPos);
-
-                    // Restaurar los colapsos que estaban abiertos
-                    colapsosAbiertos.forEach(servicioId => {
-                        const colapso = document.getElementById(`facturas-${servicioId}`);
-                        const servicioItem = document.querySelector(`.servicio-item[data-id="${servicioId}"]`);
-
-                        if (colapso && servicioItem) {
-                            colapso.classList.add('active');
-                            servicioItem.classList.add('expanded');
-                        }
-                    });
                 });
 
                 this.actualizarResumenMes();
-                // Restaurar colapsos abiertos
-                requestAnimationFrame(() => {
-                    this.restaurarColapsos();
-                });
             }
 
             actualizarServicioIndividual(servicioId) {
@@ -1777,81 +1709,64 @@
                 } else if (estadoElement) {
                     estadoElement.remove();
                 }
-
-                // Actualizar SOLO el contenido de facturas (SIN tocar el colapso)
-                const facturasContent = wrapper.querySelector('.facturas-colapso-content');
-                const facturasHTML = this.generarFacturasHTML(servicio);
-                const btnAddFactura = `<button class="btn-add-factura" onclick="event.stopPropagation(); app.abrirModalFactura('${servicio.id}', null)" title="Agregar factura">+</button>`;
-
-                facturasContent.innerHTML = facturasHTML + btnAddFactura;
             }
 
-            generarFacturasHTML(servicio) {
+            abrirModalFacturasServicio(servicioId) {
+                const servicio = this.servicios.find(s => s.id === servicioId);
+                if (!servicio) return;
+
+                const modal = document.getElementById('modal-facturas-servicio');
+                const titulo = document.getElementById('modal-facturas-titulo');
+                const listaFacturas = document.getElementById('lista-facturas-modal');
+
+                titulo.textContent = `Facturas - ${servicio.nombre}`;
+
+                // Generar HTML de facturas
                 if (servicio.facturas.length === 0) {
-                    return `<p style="text-align: center; color: var(--text-muted); padding: 1rem 0;">No hay facturas registradas</p>`;
+                    listaFacturas.innerHTML = '<p class="mensaje-sin-facturas">No hay facturas registradas</p>';
+                } else {
+                    const facturasOrdenadas = [...servicio.facturas].sort((a, b) => {
+                        return new Date(b.fecha) - new Date(a.fecha);
+                    });
+
+                    listaFacturas.innerHTML = facturasOrdenadas.map(factura => {
+                        const estadoPago = factura.pagada && factura.fechaPago
+                            ? `<div class="factura-estado-pagado">✓ Pagado: ${this.formatearFecha(factura.fechaPago)}</div>`
+                            : '<div class="factura-estado-pendiente">⏱ Pendiente</div>';
+
+                        return `
+                            <div class="factura-item" data-id="${factura.id}">
+                                <div class="factura-info" onclick="app.editarFactura('${factura.id}')">
+                                    <div class="factura-monto">${this.formatearMoneda(factura.monto)}</div>
+                                    <div class="factura-fecha">
+                                        ${factura.tipo || 'mensual'} | Vence: ${this.formatearFecha(factura.fecha)}
+                                    </div>
+                                    ${estadoPago}
+                                </div>
+                                <div class="factura-actions">
+                                    ${!factura.pagada ? `
+                                        <button class="btn-small btn-success" onclick="app.marcarPagada('${factura.id}')">
+                                            <svg class="icon" viewBox="0 0 24 24">
+                                                <polyline class="icon-line" points="20 6 9 17 4 12"/>
+                                            </svg>
+                                        </button>
+                                    ` : `
+                                        <button class="btn-small btn-primary" onclick="app.marcarNoPagada('${factura.id}')">
+                                            <svg class="icon" viewBox="0 0 24 24">
+                                                <path class="icon-line" d="M18 6L6 18M6 6l12 12"/>
+                                            </svg>
+                                        </button>
+                                    `}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
                 }
 
-                // Ordenar facturas por fecha (más reciente primero)
-                const facturasOrdenadas = [...servicio.facturas].sort((a, b) => {
-                    return new Date(b.fecha) - new Date(a.fecha);
-                });
+                // Guardar el servicioId para el botón de agregar factura
+                modal.dataset.servicioId = servicioId;
 
-                return facturasOrdenadas.map(factura => {
-                    const estadoPagoTexto = factura.pagada && factura.fechaPago
-                        ? `<div style="color: var(--c-green); font-size: 0.75rem; margin-top: 0.25rem;">Pagado: ${this.formatearFecha(factura.fechaPago)}</div>`
-                        : `<div style="color: var(--c-gold); font-size: 0.75rem; margin-top: 0.25rem;">Sin pagar</div>`;
-
-                    return `
-            <div class="factura-item-inline">
-                <div class="factura-info-inline" onclick="event.stopPropagation(); app.editarFactura('${factura.id}')">
-                    <div class="factura-monto-inline">${this.formatearMoneda(factura.monto)}</div>
-                    <div class="factura-fecha-inline">
-                        Tipo: ${factura.tipo || 'mensual'} | Vence: ${this.formatearFecha(factura.fecha)}
-                    </div>
-                    ${estadoPagoTexto}
-                </div>
-                <div class="factura-actions-inline">
-                    ${!factura.pagada ? `
-                        <button class="btn-small btn-success" onclick="event.stopPropagation(); app.marcarPagada('${factura.id}')">
-                            <svg class="icon" viewBox="0 0 24 24">
-                                <polyline class="icon-line" points="20 6 9 17 4 12"/>
-                            </svg>
-                        </button>
-                    ` : `
-                        <button class="btn-small btn-primary" onclick="event.stopPropagation(); app.marcarNoPagada('${factura.id}')">
-                            <svg class="icon" viewBox="0 0 24 24">
-                                <path class="icon-line" d="M18 6L6 18M6 6l12 12"/>
-                            </svg>
-                        </button>
-                    `}
-                </div>
-            </div>
-        `;
-                }).join('');
-            }
-            toggleFacturasColapso(servicioId) {
-                // Cerrar todos los colapsos abiertos
-                document.querySelectorAll('.facturas-colapso.active').forEach(colapso => {
-                    if (colapso.id !== `facturas-${servicioId}`) {
-                        colapso.classList.remove('active');
-                        const wrapper = colapso.closest('.servicio-wrapper');
-                        if (wrapper) {
-                            wrapper.querySelector('.servicio-item').classList.remove('expanded');
-                        }
-                    }
-                });
-
-                // Toggle del colapso seleccionado
-                const colapso = document.getElementById(`facturas-${servicioId}`);
-                const servicioItem = document.querySelector(`.servicio-item[data-id="${servicioId}"]`);
-
-                if (colapso && servicioItem) {
-                    colapso.classList.toggle('active');
-                    servicioItem.classList.toggle('expanded');
-                }
-
-                // Guardar estado de colapsos
-                this.guardarEstadoColapsos();
+                this.abrirModal('modal-facturas-servicio');
             }
 
             abrirModalServicio(servicioId = null) {
@@ -1978,11 +1893,11 @@
                 lista.innerHTML = facturasOrdenadas.map(factura => {
                     return `
         <div class="factura-item ${factura.pagada ? 'pagada' : ''}" data-id="${factura.id}">
-            <div class="factura-info" style="cursor: pointer;" onclick="app.editarFactura('${factura.id}')">
+            <div class="factura-info factura-info-clickable" onclick="app.editarFactura('${factura.id}')">
                 <div class="factura-monto">${this.formatearMoneda(factura.monto)}</div>
                 <div class="factura-fecha">
     <div>Tipo: ${factura.tipo || 'mensual'} | Vence: ${this.formatearFecha(factura.fecha)}</div>
-    ${factura.pagada && factura.fechaPago ? `<div style="color: var(--c-green); font-size: 0.875rem; margin-top: 0.25rem;">Pagado: ${this.formatearFecha(factura.fechaPago)}</div>` : ''}
+    ${factura.pagada && factura.fechaPago ? `<div class="factura-estado-pagado">Pagado: ${this.formatearFecha(factura.fechaPago)}</div>` : ''}
 </div>
             </div>
             <div class="factura-actions">
@@ -2016,6 +1931,7 @@
             }
 
             abrirModalFactura(servicioId, facturaId = null) {
+                this.cerrarModal('modal-facturas-servicio');
                 this.servicioActual = servicioId;
                 this.facturaActual = facturaId;
 
@@ -2075,6 +1991,8 @@
                 const servicio = this.servicios.find(s => s.id === this.servicioActual);
                 if (!servicio) return;
 
+                let esNueva = !this.facturaActual;
+
                 if (this.facturaActual) {
                     // Editar factura existente
                     const factura = servicio.facturas.find(f => f.id === this.facturaActual);
@@ -2085,7 +2003,6 @@
                         if (fechaPago) {
                             factura.fechaPago = fechaPago;
                         }
-                        this.mostrarToast('Factura actualizada', 'success');
                     }
                 } else {
                     // Crear nueva factura
@@ -2098,7 +2015,6 @@
                         fechaPago: null
                     };
                     servicio.facturas.push(nuevaFactura);
-                    this.mostrarToast('Factura creada', 'success');
                 }
 
                 this.guardarDatos();
@@ -2107,8 +2023,12 @@
                 this.cerrarModal('modal-factura');
 
                 // Actualizar solo el servicio afectado
-                if (this.servicioActualFactura) {
-                    this.actualizarServicioIndividual(this.servicioActualFactura);
+                this.actualizarServicioIndividual(this.servicioActual);
+
+                // Actualizar el modal de facturas si está abierto
+                const modalFacturas = document.getElementById('modal-facturas-servicio');
+                if (modalFacturas.classList.contains('active') && modalFacturas.dataset.servicioId === this.servicioActual) {
+                    this.abrirModalFacturasServicio(this.servicioActual);
                 }
 
                 this.mostrarToast(esNueva ? 'Factura agregada' : 'Factura actualizada', 'success');
@@ -2132,6 +2052,12 @@
 
                 if (servicioId) {
                     this.actualizarServicioIndividual(servicioId);
+
+                    // Actualizar el modal de facturas si está abierto
+                    const modalFacturas = document.getElementById('modal-facturas-servicio');
+                    if (modalFacturas.classList.contains('active') && modalFacturas.dataset.servicioId === servicioId) {
+                        this.abrirModalFacturasServicio(servicioId);
+                    }
                 }
 
                 this.actualizarResumenMes();
@@ -2155,6 +2081,12 @@
 
                 if (servicioId) {
                     this.actualizarServicioIndividual(servicioId);
+
+                    // Actualizar el modal de facturas si está abierto
+                    const modalFacturas = document.getElementById('modal-facturas-servicio');
+                    if (modalFacturas.classList.contains('active') && modalFacturas.dataset.servicioId === servicioId) {
+                        this.abrirModalFacturasServicio(servicioId);
+                    }
                 }
 
                 this.actualizarResumenMes();
@@ -2164,7 +2096,7 @@
                 // Buscar el servicio que contiene esta factura
                 const servicio = this.servicios.find(s => s.facturas.some(f => f.id === facturaId));
                 if (!servicio) return;
-
+                this.cerrarModal('modal-facturas-servicio');
                 this.abrirModalFactura(servicio.id, facturaId);
             }
 
@@ -2413,41 +2345,6 @@
             }
 
             // ========================================
-            // ESTADO DE COLAPSOS
-            // ========================================
-
-            guardarEstadoColapsos() {
-                const colapsosAbiertos = [];
-                document.querySelectorAll('.facturas-colapso.active').forEach(colapso => {
-                    const servicioId = colapso.id.replace('facturas-', '');
-                    colapsosAbiertos.push(servicioId);
-                });
-                localStorage.setItem('colapsos_abiertos', JSON.stringify(colapsosAbiertos));
-            }
-
-            cargarEstadoColapsos() {
-                try {
-                    const guardado = localStorage.getItem('colapsos_abiertos');
-                    return guardado ? JSON.parse(guardado) : [];
-                } catch (error) {
-                    return [];
-                }
-            }
-
-            restaurarColapsos() {
-                const colapsosAbiertos = this.cargarEstadoColapsos();
-                colapsosAbiertos.forEach(servicioId => {
-                    const colapso = document.getElementById(`facturas-${servicioId}`);
-                    const servicioItem = document.querySelector(`.servicio-item[data-id="${servicioId}"]`);
-
-                    if (colapso && servicioItem) {
-                        colapso.classList.add('active');
-                        servicioItem.classList.add('expanded');
-                    }
-                });
-            }
-
-            // ========================================
             // TEMA
             // ========================================
 
@@ -2564,12 +2461,18 @@
 </html>
 
 <!--// ====================================================================
-    //                 NOTAS SISTEMA DeltaF VERSION 0.15
+    //                 NOTAS SISTEMA DeltaF VERSION 0.16
     // ====================================================================
     
      - PROMP:
-    1) Se 
+     1) Se rediseña la tarjeta de estado
+     2) Se corrige bug cuando se abrian algunos modales no se cerraba el modal padre
 
-     
+
+
+     - bugs:
+     1) al modificar una fecha de pago no se actualiza el resumen de pagos, area
+     "pagados este mes"
+
 
     -->
