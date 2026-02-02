@@ -99,7 +99,7 @@
         .main-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 1rem;
+            gap: 0 1rem;
         }
 
         @media (min-width: 768px) {
@@ -175,6 +175,7 @@
             padding: 1.5rem 1rem;
             box-shadow: var(--shadow);
             color: var(--text-main);
+            margin-bottom: 1rem;
         }
 
         .card h2 {
@@ -270,6 +271,12 @@
             right: 1.5rem;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             z-index: 80;
+        }
+
+        #btn-filter,
+        #btn-undo,
+        #btn-redo {
+            border: none;
         }
 
         /* --- Servicios --- */
@@ -608,16 +615,14 @@
                 width: 75vw;
                 max-width: 280px;
             }
+
+            .menu-ajustes.active {
+                right: 0;
+            }
         }
 
         .menu-ajustes.active {
             right: 0;
-        }
-
-        @media (max-width: 480px) {
-            .menu-ajustes.active {
-                right: 0;
-            }
         }
 
         .menu-overlay {
@@ -877,7 +882,7 @@
 
         .card-header-collapsible+.collapsible-content {
             padding-top: 0;
-            transition: max-height 0.3s ease, opacity 0.3s ease, padding-top 0.3s ease;
+            transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out, padding-top 0.4s ease-in-out;
         }
 
         .card-header-collapsible+.collapsible-content:not(.collapsed) {
@@ -893,10 +898,14 @@
             transform: rotate(-90deg);
         }
 
+        .chevron-icon.semi-collapsed {
+            transform: rotate(180deg);
+        }
+
         .collapsible-content {
-            max-height: 1000px;
+            max-height: 2000px;
             overflow: hidden;
-            transition: max-height 0.3s ease, opacity 0.3s ease, padding-top 0.3s ease;
+            transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out, padding-top 0.4s ease-in-out;
             opacity: 1;
         }
 
@@ -906,11 +915,159 @@
 
         }
 
+        /* Estados de la tarjeta de servicios (3 estados) */
+        .servicios-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            justify-content: flex-start;
+            max-height: 50px;
+            opacity: 1;
+            overflow: hidden;
+            transition: max-height 0.3s ease, opacity 0.3s ease, margin-bottom 0.3s ease;
+        }
+
+        .servicios-actions.hidden {
+            max-height: 0;
+            opacity: 0;
+            margin-bottom: 0;
+        }
+
+        #servicios-content.semi-collapsed .servicios-actions {
+            max-height: 0;
+            opacity: 0;
+            margin-bottom: 0;
+        }
+
+        /* Cuando está completamente colapsado */
+        #servicios-content.collapsed .servicios-actions,
+        #servicios-content.collapsed .servicios-lista {
+            display: none;
+        }
+
         /* --- codigo css --- */
     </style>
 </head>
 
 <body>
+
+    <svg style="display: none;">
+        <symbol id="icon-moon" viewBox="0 0 24 24">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" class="icon-line" stroke-width="2"
+                stroke="currentColor" fill="none"></path>
+        </symbol>
+        <symbol id="icon-sun" viewBox="0 0 24 24">
+            <g class="icon-line" stroke-width="2" stroke="currentColor">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </g>
+        </symbol>
+        <symbol id="icon-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path
+                d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z">
+            </path>
+        </symbol>
+        <symbol id="icon-clock" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" class="icon-line" stroke="currentColor"></circle>
+            <polyline points="12 6 12 12 16 14" class="icon-line" stroke="currentColor"></polyline>
+        </symbol>
+        <symbol id="icon-trash" viewBox="0 0 24 24">
+            <polyline points="3 6 5 6 21 6" class="icon-line" stroke="currentColor"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" class="icon-line"
+                stroke="currentColor"></path>
+        </symbol>
+        <symbol id="icon-save" viewBox="0 0 24 24">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" class="icon-line"
+                stroke="currentColor"></path>
+            <polyline points="17 21 17 13 7 13 7 21" class="icon-line" stroke="currentColor"></polyline>
+            <polyline points="7 3 7 8 15 8" class="icon-line" stroke="currentColor"></polyline>
+        </symbol>
+        <symbol id="icon-broom" viewBox="0 0 24 24">
+            <path class="icon-line"
+                d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14zM8 11v6M12 11v6M16 11v6M10 3L9 6h6l-1-3" />
+        </symbol>
+        <symbol id="icon-download" viewBox="0 0 24 24">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" class="icon-line" stroke="currentColor"></path>
+            <polyline points="7 10 12 15 17 10" class="icon-line" stroke="currentColor"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3" class="icon-line" stroke="currentColor"></line>
+        </symbol>
+        <symbol id="icon-upload" viewBox="0 0 24 24">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" class="icon-line" stroke="currentColor"></path>
+            <polyline points="17 8 12 3 7 8" class="icon-line" stroke="currentColor"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15" class="icon-line" stroke="currentColor"></line>
+        </symbol>
+        <symbol id="icon-edit" viewBox="0 0 24 24">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" class="icon-line"
+                stroke="currentColor"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" class="icon-line" stroke="currentColor">
+            </path>
+        </symbol>
+        <symbol id="icon-list" viewBox="0 0 24 24">
+            <line x1="8" y1="6" x2="21" y2="6" class="icon-line" stroke="currentColor"></line>
+            <line x1="8" y1="12" x2="21" y2="12" class="icon-line" stroke="currentColor"></line>
+            <line x1="8" y1="18" x2="21" y2="18" class="icon-line" stroke="currentColor"></line>
+            <line x1="3" y1="6" x2="3.01" y2="6" class="icon-line" stroke="currentColor"></line>
+            <line x1="3" y1="12" x2="3.01" y2="12" class="icon-line" stroke="currentColor"></line>
+            <line x1="3" y1="18" x2="3.01" y2="18" class="icon-line" stroke="currentColor"></line>
+        </symbol>
+        <symbol id="icon-cancelar" viewBox="0 0 24 24">
+            <line x1="18" y1="6" x2="6" y2="18" class="icon-line" stroke="currentColor"></line>
+            <line x1="6" y1="6" x2="18" y2="18" class="icon-line" stroke="currentColor"></line>
+        </symbol>
+        <symbol id="icon-undo" viewBox="0 0 24 24">
+            <path d="M3 7v6h6" class="icon-line" stroke="currentColor"></path>
+            <path d="M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13" class="icon-line" stroke="currentColor"></path>
+        </symbol>
+        <symbol id="icon-redo" viewBox="0 0 24 24">
+            <path d="M21 7v6h-6" class="icon-line" stroke="currentColor"></path>
+            <path d="M3 17a9 9 0 019-9 9 9 0 016 2.3L21 13" class="icon-line" stroke="currentColor"></path>
+        </symbol>
+        <symbol id="icon-calendar-simple" viewBox="0 0 24 24">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" class="icon-line" stroke="currentColor"></rect>
+            <line x1="16" y1="2" x2="16" y2="6" class="icon-line" stroke="currentColor"></line>
+            <line x1="8" y1="2" x2="8" y2="6" class="icon-line" stroke="currentColor"></line>
+            <line x1="3" y1="10" x2="21" y2="10" class="icon-line" stroke="currentColor"></line>
+        </symbol>
+        <symbol id="icon-filter" viewBox="0 0 24 24">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" class="icon-line" stroke="currentColor">
+            </polygon>
+        </symbol>
+        <symbol id="icon-install" viewBox="0 0 24 24">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" class="icon-line" stroke="currentColor"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" class="icon-line" stroke="currentColor"></path>
+            <line x1="12" y1="16" x2="12" y2="16.01" class="icon-line" stroke-width="3" stroke="currentColor"></line>
+        </symbol>
+        <symbol id="icon-stats" viewBox="0 0 24 24">
+            <line x1="18" y1="20" x2="18" y2="10" class="icon-line" stroke="currentColor"></line>
+            <line x1="12" y1="20" x2="12" y2="4" class="icon-line" stroke="currentColor"></line>
+            <line x1="6" y1="20" x2="6" y2="14" class="icon-line" stroke="currentColor"></line>
+        </symbol>
+        <symbol id="icon-plus" viewBox="0 0 24 24">
+            <line x1="12" y1="5" x2="12" y2="19" class="icon-line" stroke="currentColor"></line>
+            <line x1="5" y1="12" x2="19" y2="12" class="icon-line" stroke="currentColor"></line>
+        </symbol>
+        <symbol id="icon-lock" viewBox="0 0 24 24">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" class="icon-line" stroke="currentColor"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" class="icon-line" stroke="currentColor"></path>
+        </symbol>
+        <symbol id="icon-lock-open" viewBox="0 0 24 24">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" class="icon-line" stroke="currentColor"></rect>
+            <path d="M7 11V7a5 5 0 0 1 9.9-1" class="icon-line" stroke="currentColor"></path>
+        </symbol>
+        <symbol id="icon-briefcase" viewBox="0 0 24 24">
+            <rect x="2" y="7" width="20" height="14" rx="2" ry="2" class="icon-line" stroke="currentColor"></rect>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" class="icon-line" stroke="currentColor"></path>
+        </symbol>
+
+    </svg>
     <!-- Header -->
     <header class="header">
         <h1>
@@ -977,7 +1134,7 @@
                 </svg>
                 Cerrar menú
             </button>
-            <div class="menu-version">Version 0.18</div> <!-- DeltaF -->
+            <div class="menu-version">Version 0.21</div> <!-- DeltaF -->
         </div>
     </div>
 
@@ -986,7 +1143,6 @@
         <div class="main-grid">
             <!-- Columna izquierda (sidebar) -->
             <div class="sidebar-left">
-                <!-- Tarjeta de Estado (incluye fecha) -->
                 <div class="card">
                     <div id="resumen-mes"></div>
                 </div>
@@ -1015,8 +1171,8 @@
             <div class="main-content">
                 <!-- Tarjeta de Servicios -->
                 <div class="card">
-                    <div class="card-header">
-                        <h2>
+                    <h2 class="card-header-collapsible" id="servicios-header">
+                        <span style="display: flex; align-items: center; gap: 0.5rem;">
                             <svg class="icon" viewBox="0 0 24 24">
                                 <rect class="icon-line" x="3" y="4" width="18" height="18" rx="2" ry="2" />
                                 <line class="icon-line" x1="16" y1="2" x2="16" y2="6" />
@@ -1024,24 +1180,37 @@
                                 <line class="icon-line" x1="3" y1="10" x2="21" y2="10" />
                             </svg>
                             Servicios
-                        </h2>
-                        <div class="card-actions">
-                            <button class="icon-btn" id="btn-undo" title="Deshacer (Ctrl+Z)" disabled>
-                                <svg class="icon" viewBox="0 0 24 24">
-                                    <path class="icon-line" d="M3 7v6h6" />
-                                    <path class="icon-line" d="M21 17a9 9 0 00-9-9 9 9 0 00-9 9" />
+                        </span>
+                        <svg class="icon chevron-icon" id="servicios-chevron" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </h2>
+
+                    <div id="servicios-content" class="collapsible-content">
+                        <div class="card-actions servicios-actions" id="servicios-actions">
+                            <button class="icon-btn" id="btn-filter" title="Filtrar servicios">
+                                <svg class="icon">
+                                    <use href="#icon-filter" />
                                 </svg>
                             </button>
-                            <button class="icon-btn" id="btn-redo" title="Rehacer (Ctrl+Y)" disabled>
-                                <svg class="icon" viewBox="0 0 24 24">
-                                    <path class="icon-line" d="M21 7v6h-6" />
-                                    <path class="icon-line" d="M3 17a9 9 0 019-9 9 9 0 019 9" />
-                                </svg>
-                            </button>
+                            <div style="margin-left: auto; display: flex; gap: 0.5rem;">
+                                <button class="icon-btn" id="btn-undo" title="Deshacer (Ctrl+Z)" disabled>
+                                    <svg class="icon">
+                                        <use href="#icon-undo" />
+                                    </svg>
+                                </button>
+                                <button class="icon-btn" id="btn-redo" title="Rehacer (Ctrl+Y)" disabled>
+                                    <svg class="icon">
+                                        <use href="#icon-redo" />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="servicios-lista" id="servicios-lista">
-                        <!-- Los servicios se cargarán aquí -->
+
+                        <div class="servicios-lista" id="servicios-lista">
+                            <!-- Los servicios se cargarán aquí -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1073,31 +1242,6 @@
                         style="display: none;">Eliminar</button>
                 </div>
             </form>
-        </div>
-    </div>
-
-    <!-- Modal Ver Facturas -->
-    <div class="modal" id="modal-facturas">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modal-facturas-titulo">Facturas</h3>
-                <button class="modal-close" id="modal-facturas-close">
-                    <svg class="icon" viewBox="0 0 24 24">
-                        <path class="icon-line" d="M18 6L6 18M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-
-            <button type="button" class="btn-success" id="btn-agregar-factura">
-                <svg class="icon" viewBox="0 0 24 24">
-                    <path class="icon-line" d="M12 5v14M5 12h14" />
-                </svg>
-                Agregar Factura
-            </button>
-
-            <div class="facturas-lista" id="facturas-lista">
-                <!-- Las facturas se cargarán aquí -->
-            </div>
         </div>
     </div>
 
@@ -1216,6 +1360,8 @@
                 this.mostrandoPagadoMes = false;
                 this.datosResumen = { pendiente: 0, pagadoMes: 0 };
 
+                this.serviciosCollapseState = 'expanded'; // 'expanded', 'semi-collapsed', 'collapsed'
+
                 this.init();
             }
 
@@ -1241,6 +1387,10 @@
                     document.getElementById('estadisticas-mes').classList.add('collapsed');
                     document.getElementById('estadisticas-chevron').classList.add('collapsed');
                 }
+                // Restaurar estado de servicios colapsados
+                const serviciosState = localStorage.getItem('servicios-collapse-state') || 'expanded';
+                this.serviciosCollapseState = serviciosState;
+                this.aplicarEstadoServicios(serviciosState);
             }
 
             setupEventListeners() {
@@ -1262,7 +1412,6 @@
 
                 // Modales
                 document.getElementById('modal-servicio-close').addEventListener('click', () => this.cerrarModal('modal-servicio'));
-                document.getElementById('modal-facturas-close').addEventListener('click', () => this.cerrarModal('modal-facturas'));
                 document.getElementById('modal-factura-close').addEventListener('click', () => this.cerrarModal('modal-factura'));
 
                 // Cerrar modales al hacer click fuera
@@ -1278,7 +1427,6 @@
                 document.getElementById('form-servicio').addEventListener('submit', (e) => this.guardarServicio(e));
                 document.getElementById('form-factura').addEventListener('submit', (e) => this.guardarFactura(e));
                 document.getElementById('btn-eliminar-servicio').addEventListener('click', () => this.eliminarServicio());
-                document.getElementById('btn-agregar-factura').addEventListener('click', () => this.abrirModalFactura());
                 document.getElementById('btn-fecha-hoy').addEventListener('click', () => this.establecerFechaHoy());
                 document.getElementById('btn-eliminar-factura-modal').addEventListener('click', () => this.eliminarFacturaDesdeModal());
                 // Botón para establecer fecha de pago como hoy
@@ -1291,15 +1439,20 @@
                     this.toggleEstadisticas();
                 });
 
-                // Cerrar modales con ESC
-                document.addEventListener('keydown', (e) => {
-                    if (e.key === 'Escape') {
-                        this.cerrarTodosLosModales();
-                    }
+                // Toggle de servicios colapsable (3 estados)
+                document.getElementById('servicios-header').addEventListener('click', () => {
+                    this.toggleServicios();
                 });
 
                 // Atajos de teclado
                 document.addEventListener('keydown', (e) => {
+                    // ESC para cerrar modales
+                    if (e.key === 'Escape') {
+                        this.cerrarTodosLosModales();
+                        return;
+                    }
+
+                    // Ctrl/Cmd + Z/Y para undo/redo
                     if (e.ctrlKey || e.metaKey) {
                         if (e.key === 'z' && !e.shiftKey) {
                             e.preventDefault();
@@ -1521,6 +1674,40 @@
                 // Guardar estado en localStorage
                 const estaColapsado = contenido.classList.contains('collapsed');
                 localStorage.setItem('estadisticas-collapsed', estaColapsado);
+            }
+
+            toggleServicios() {
+                const estados = ['collapsed', 'semi-collapsed', 'expanded'];
+                const estadoActualIndex = estados.indexOf(this.serviciosCollapseState);
+                const nuevoEstadoIndex = (estadoActualIndex + 1) % 3;
+                const nuevoEstado = estados[nuevoEstadoIndex];
+
+                this.serviciosCollapseState = nuevoEstado;
+                this.aplicarEstadoServicios(nuevoEstado);
+
+                // Guardar estado en localStorage
+                localStorage.setItem('servicios-collapse-state', nuevoEstado);
+            }
+
+            aplicarEstadoServicios(estado) {
+                const contenido = document.getElementById('servicios-content');
+                const chevron = document.getElementById('servicios-chevron');
+
+                // Remover todas las clases de estado
+                contenido.classList.remove('collapsed', 'semi-collapsed');
+                chevron.classList.remove('collapsed', 'semi-collapsed');
+
+                if (estado === 'collapsed') {
+                    contenido.classList.add('collapsed');
+                    chevron.classList.add('collapsed');
+                } else if (estado === 'semi-collapsed') {
+                    contenido.classList.add('semi-collapsed');
+                    // Rotar el chevron 180 grados para semi-collapsed
+                    chevron.style.transform = 'rotate(180deg)';
+                } else {
+                    // Estado expanded - chevron normal
+                    chevron.style.transform = '';
+                }
             }
 
             generarOpcionesMeses(mesSeleccionado, añoSeleccionado) {
@@ -1864,9 +2051,19 @@
                 e.preventDefault();
 
                 const nombre = document.getElementById('servicio-nombre').value.trim();
-
                 if (!nombre) {
-                    this.mostrarToast('El nombre es requerido', 'error');
+                    this.mostrarToast('El nombre del servicio es obligatorio', 'error');
+                    return;
+                }
+
+                // Validar que no exista otro servicio con el mismo nombre (case insensitive)
+                const nombreExiste = this.servicios.some(s =>
+                    s.id !== this.servicioActual &&
+                    s.nombre.toLowerCase() === nombre.toLowerCase()
+                );
+
+                if (nombreExiste) {
+                    this.mostrarToast('Ya existe un servicio con ese nombre', 'error');
                     return;
                 }
 
@@ -1916,87 +2113,6 @@
             // GESTIÓN DE FACTURAS
             // ========================================
 
-            abrirFacturasServicio(servicioId) {
-                this.servicioActual = servicioId;
-                const servicio = this.servicios.find(s => s.id === servicioId);
-
-                if (!servicio) return;
-
-                document.getElementById('modal-facturas-titulo').textContent = `${servicio.nombre}`;
-
-                this.renderFacturas();
-                this.abrirModal('modal-facturas');
-            }
-
-            renderFacturas() {
-                // Guardar posición de scroll antes de actualizar
-                const scrollPos = window.scrollY || window.pageYOffset;
-
-                const servicio = this.servicios.find(s => s.id === this.servicioActual);
-                if (!servicio) return;
-
-                const lista = document.getElementById('facturas-lista');
-
-                if (servicio.facturas.length === 0) {
-                    lista.innerHTML = `
-                        <div class="empty-state" style="padding: 2rem 1rem;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                                <polyline points="14 2 14 8 20 8"/>
-                                <line x1="12" y1="18" x2="12" y2="12"/>
-                                <line x1="9" y1="15" x2="15" y2="15"/>
-                            </svg>
-                            <p>No hay facturas registradas</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                // Ordenar facturas por fecha (más reciente primero)
-                const facturasOrdenadas = [...servicio.facturas].sort((a, b) => {
-                    return new Date(b.fecha) - new Date(a.fecha);
-                });
-
-                lista.innerHTML = facturasOrdenadas.map(factura => {
-                    return `
-        <div class="factura-item ${factura.pagada ? 'pagada' : ''}" data-id="${factura.id}">
-            <div class="factura-info factura-info-clickable" onclick="app.editarFactura('${factura.id}')">
-                <div class="factura-monto">${this.formatearMoneda(factura.monto)}</div>
-                <div class="factura-fecha">
-    <div>Tipo: ${factura.tipo || 'mensual'} | Vence: ${this.formatearFecha(factura.fecha)}</div>
-    ${factura.pagada && factura.fechaPago ? `<div class="factura-estado-pagado">Pagado: ${this.formatearFecha(factura.fechaPago)}</div>` : ''}
-</div>
-            </div>
-            <div class="factura-actions">
-                ${!factura.pagada ? `
-                    <button class="btn-small btn-success" onclick="app.marcarPagada('${factura.id}')">
-                        <svg class="icon" viewBox="0 0 24 24">
-                            <polyline class="icon-line" points="20 6 9 17 4 12"/>
-                        </svg>
-                    </button>
-                ` : `
-                    <button class="btn-small btn-primary" onclick="app.marcarNoPagada('${factura.id}')">
-                        <svg class="icon" viewBox="0 0 24 24">
-                            <path class="icon-line" d="M18 6L6 18M6 6l12 12"/>
-                        </svg>
-                    </button>
-                `}
-                <button class="btn-small btn-danger" onclick="app.eliminarFactura('${factura.id}')">
-                    <svg class="icon" viewBox="0 0 24 24">
-                        <path class="icon-line" d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                    </svg>
-                </button>
-            </div>
-        </div>
-    `;
-                }).join('');
-
-                // Restaurar posición de scroll después de actualizar
-                requestAnimationFrame(() => {
-                    window.scrollTo(0, scrollPos);
-                });
-            }
-
             abrirModalFactura(servicioId, facturaId = null) {
                 this.cerrarModal('modal-facturas-servicio');
                 this.servicioActual = servicioId;
@@ -2045,8 +2161,13 @@
                 const fecha = document.getElementById('factura-fecha').value;
                 const fechaPago = document.getElementById('factura-fecha-pago').value;
 
-                if (!monto || monto <= 0) {
-                    this.mostrarToast('El monto debe ser mayor a 0', 'error');
+                if (!monto || isNaN(monto) || monto <= 0) {
+                    this.mostrarToast('El monto debe ser un número mayor a 0', 'error');
+                    return;
+                }
+
+                if (monto > 9999999) {
+                    this.mostrarToast('El monto es demasiado grande', 'error');
                     return;
                 }
 
@@ -2086,7 +2207,6 @@
 
                 this.guardarDatos();
                 this.guardarEstado();
-                this.renderFacturas();
                 this.cerrarModal('modal-factura');
 
                 // Actualizar solo el servicio afectado
@@ -2528,12 +2648,13 @@
 </html>
 
 <!--// ====================================================================
-    //                 NOTAS SISTEMA DeltaF VERSION 0.19
+    //                 NOTAS SISTEMA DeltaF VERSION 0.21
     // ====================================================================
     
      - PROMP:
-     1) Se agrega colapso en la tarjeta de servicios
-
+     1) optimizacion de codigo
+     2) validacion de servicios duplicados
+     3) agregado monto maximo
 
 
      - bugs:
