@@ -2,10 +2,10 @@
   "name": "Servicios",
   "short_name": "Servicios",
   "description": "Gestión de servicios y facturas",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "theme_color": "#5382e6",
   "orientation": "portrait-primary",
   "icons": [
     {
@@ -21,7 +21,6 @@
     }
   ],
   "categories": ["business", "finance", "productivity"],
-  "screenshots": [],
-  "scope": "/",
+  "scope": "./",
   "prefer_related_applications": false
 }
