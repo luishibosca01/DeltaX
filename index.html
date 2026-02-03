@@ -410,10 +410,6 @@
             animation: slideUp 0.3s ease;
         }
 
-        #modal-facturas-servicio>.modal-content>button+button {
-            margin-top: 0.5rem;
-        }
-
         .modal-header {
             display: flex;
             justify-content: space-between;
@@ -500,10 +496,45 @@
         }
 
         /* --- Facturas --- */
-        .facturas-lista {
+        /* Modal de facturas con header y footer sticky */
+        .modal-facturas-content {
             display: flex;
             flex-direction: column;
-            margin: 1rem 0;
+            max-height: 90vh;
+            overflow: hidden;
+        }
+
+        .modal-facturas-header {
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            z-index: 10;
+            margin-bottom: 0;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-facturas-footer {
+            position: sticky;
+            bottom: 0;
+            background: var(--bg-card);
+            z-index: 10;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .facturas-lista {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 0;
+            margin: 0 -1rem;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            display: flex;
+            flex-direction: column;
             gap: 0.5rem;
         }
 
@@ -1064,7 +1095,88 @@
             overflow: hidden;
         }
 
-        /* --- codigo css --- */
+        /* Contenedor de búsqueda */
+        .search-container {
+            position: relative;
+            margin-bottom: 1rem;
+            max-height: 50px;
+            opacity: 1;
+            overflow: visible;
+            transition: max-height 0.3s ease, opacity 0.3s ease, margin-bottom 0.3s ease;
+        }
+
+        #servicios-content.semi-collapsed .search-container {
+            max-height: 0;
+            opacity: 0;
+            margin-bottom: 0;
+            overflow: hidden;
+        }
+
+        #servicios-content.collapsed .search-container {
+            max-height: 0;
+            opacity: 0;
+            margin-bottom: 0;
+            overflow: hidden;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 2.5rem 0.75rem 2.5rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            background: var(--input-bg);
+            color: var(--text-main);
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--input-focus);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1.1rem;
+            height: 1.1rem;
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .search-clear {
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            padding: 0.25rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            width: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s;
+        }
+
+        .search-clear:hover {
+            color: var(--text-main);
+        }
+
+        .search-clear .icon {
+            width: 1rem;
+            height: 1rem;
+        }
+
         /* --- codigo css --- */
     </style>
     <script>
@@ -1117,7 +1229,7 @@
             } catch (e) { }
         })();
     </script>
-
+    <script src="sw-register.js"></script>
     <svg style="display: none;">
         <symbol id="icon-moon" viewBox="0 0 24 24">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" class="icon-line" stroke-width="2"
@@ -1298,7 +1410,7 @@
                 </svg>
                 Cerrar menú
             </button>
-            <div class="menu-version">Version 0.27</div> <!-- DeltaF -->
+            <div class="menu-version">Version 0.28</div> <!-- DeltaF -->
         </div>
     </div>
 
@@ -1353,11 +1465,6 @@
 
                     <div id="servicios-content" class="collapsible-content collapsed">
                         <div class="card-actions servicios-actions" id="servicios-actions">
-                            <button class="icon-btn" id="btn-filter" title="Filtrar servicios">
-                                <svg class="icon">
-                                    <use href="#icon-filter" />
-                                </svg>
-                            </button>
                             <button class="icon-btn" id="btn-sort" title="Ordenar servicios">
                                 <svg class="icon">
                                     <use href="#icon-list" />
@@ -1375,6 +1482,20 @@
                                     </svg>
                                 </button>
                             </div>
+                        </div>
+
+                        <div class="search-container">
+                            <svg class="search-icon icon" viewBox="0 0 24 24">
+                                <circle cx="11" cy="11" r="8" class="icon-line" stroke="currentColor"></circle>
+                                <path d="m21 21-4.35-4.35" class="icon-line" stroke="currentColor"></path>
+                            </svg>
+                            <input type="text" id="search-input" class="search-input" placeholder="Buscar servicio...">
+                            <button class="search-clear" id="search-clear" style="display: none;">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <line x1="18" y1="6" x2="6" y2="18" class="icon-line" stroke="currentColor"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18" class="icon-line" stroke="currentColor"></line>
+                                </svg>
+                            </button>
                         </div>
 
                         <div class="servicios-lista" id="servicios-lista">
@@ -1408,6 +1529,8 @@
                         </svg>Guardar
                     </button>
                     <button type="button" id="btn-eliminar-servicio" style="display: none;">Eliminar</button>
+                </div>
+                <div class="form-actions" style="margin-top: 0.5rem;">
                     <button class="button" id="modal-servicio-close">
                         <svg class="icon">
                             <use href="#icon-cancel" />
@@ -1510,26 +1633,28 @@
 
     <!-- Modal Facturas del Servicio -->
     <div class="modal" id="modal-facturas-servicio">
-        <div class="modal-content">
-            <div class="modal-header">
+        <div class="modal-content modal-facturas-content">
+            <div class="modal-header modal-facturas-header">
                 <h3 id="modal-facturas-titulo">Facturas del Servicio</h3>
             </div>
             <div class="facturas-lista custom-scroll" id="lista-facturas-modal">
                 <!-- Las facturas se cargarán aquí -->
             </div>
-            <button type="button"
-                onclick="app.abrirModalFactura(document.getElementById('modal-facturas-servicio').dataset.servicioId, null)">
-                <svg class="icon">
-                    <use href="#icon-plus" />
-                </svg>
-                Agregar Factura
-            </button>
-            <button type="button" onclick="app.cerrarModal('modal-facturas-servicio')">
-                <svg class="icon">
-                    <use href="#icon-cancel" />
-                </svg>
-                Cerrar
-            </button>
+            <div class="modal-facturas-footer">
+                <button type="button"
+                    onclick="app.abrirModalFactura(document.getElementById('modal-facturas-servicio').dataset.servicioId, null)">
+                    <svg class="icon">
+                        <use href="#icon-plus" />
+                    </svg>
+                    Agregar Factura
+                </button>
+                <button type="button" onclick="app.cerrarModal('modal-facturas-servicio')">
+                    <svg class="icon">
+                        <use href="#icon-cancel" />
+                    </svg>
+                    Cerrar
+                </button>
+            </div>
         </div>
     </div>
 
@@ -1565,9 +1690,11 @@
                 this.toggleServiciosTimer = null;
                 this.toggleServiciosDelay = 500;
 
-                // NUEVAS PROPIEDADES
-                this.filtroActual = 'todos'; // 'todos', 'pendientes', 'pagados', 'vencidos'
+                // Ordenamiento de lista de servicios
                 this.ordenActual = localStorage.getItem('gestion_servicios_orden') || 'nombre';
+
+                this.terminoBusqueda = '';
+                this.enModoBusqueda = false;
 
                 this.init();
             }
@@ -1606,6 +1733,42 @@
                         select.value = this.ordenActual;
                     }
                     this.abrirModal('modal-ordenar');
+                });
+
+                // Buscador
+                const searchInput = document.getElementById('search-input');
+                const searchClear = document.getElementById('search-clear');
+
+                searchInput.addEventListener('input', (e) => {
+                    this.terminoBusqueda = e.target.value.toLowerCase().trim();
+                    this.enModoBusqueda = true; // AGREGAR
+                    searchClear.style.display = this.terminoBusqueda ? 'flex' : 'none';
+                    this.renderServicios();
+                });
+
+                searchClear.addEventListener('click', () => {
+                    searchInput.value = '';
+                    this.terminoBusqueda = '';
+                    searchClear.style.display = 'none';
+                    this.renderServicios();
+                    // Esperar a que termine el render antes de salir del modo búsqueda
+                    setTimeout(() => {
+                        this.enModoBusqueda = false;
+                    }, 100);
+                });
+
+                searchInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        searchInput.value = '';
+                        this.terminoBusqueda = '';
+                        searchClear.style.display = 'none';
+                        this.renderServicios();
+                        searchInput.blur();
+                        // Esperar a que termine el render antes de salir del modo búsqueda
+                        setTimeout(() => {
+                            this.enModoBusqueda = false;
+                        }, 100);
+                    }
                 });
             }
 
@@ -1690,18 +1853,12 @@
 
             actualizarResumenMes() {
                 const hoy = new Date();
-                hoy.setHours(0, 0, 0, 0);
                 const mesActual = hoy.getMonth();
                 const añoActual = hoy.getFullYear();
 
-                // Calcular mes siguiente
-                const fechaMesSiguiente = new Date(añoActual, mesActual + 1, 1);
-                const mesSiguiente = fechaMesSiguiente.getMonth();
-                const añoSiguiente = fechaMesSiguiente.getFullYear();
-
                 let totalAPagar = 0;
                 let totalPagadoMes = 0;
-                let totalFacturasMesActualYSiguiente = 0; // NUEVO: total de facturas del período
+                let totalFacturasMesActual = 0; // Total de facturas del mes actual
 
                 this.servicios.forEach(servicio => {
                     servicio.facturas.forEach(factura => {
@@ -1710,11 +1867,10 @@
                         const añoFactura = fechaFactura.getFullYear();
 
                         const esDelMesActual = mesFactura === mesActual && añoFactura === añoActual;
-                        const esDelMesSiguiente = mesFactura === mesSiguiente && añoFactura === añoSiguiente;
 
-                        // Calcular total del período (mes actual + siguiente)
-                        if (esDelMesActual || esDelMesSiguiente) {
-                            totalFacturasMesActualYSiguiente += factura.monto;
+                        // Calcular total del mes actual
+                        if (esDelMesActual) {
+                            totalFacturasMesActual += factura.monto;
 
                             if (!factura.pagada) {
                                 totalAPagar += factura.monto;
@@ -1735,7 +1891,7 @@
                 this.datosResumen = {
                     pendiente: totalAPagar,
                     pagadoMes: totalPagadoMes,
-                    totalPeriodo: totalFacturasMesActualYSiguiente // NUEVO
+                    totalPeriodo: totalFacturasMesActual
                 };
 
                 // CARGAR el estado guardado ANTES de mostrar
@@ -1758,8 +1914,6 @@
                 hoy.setHours(0, 0, 0, 0);
                 const mesActual = hoy.getMonth();
                 const añoActual = hoy.getFullYear();
-                const mesSiguiente = new Date(añoActual, mesActual + 1, 1).getMonth();
-                const añoSiguiente = mesSiguiente === 0 ? añoActual + 1 : añoActual;
 
                 let prioridad = 5; // 1=vencido/urgente, 2=proximo, 3=lejano, 4=pagado, 5=sin estado
                 let colorBorde = '';
@@ -1770,11 +1924,10 @@
                         const mesFactura = fechaFactura.getMonth();
                         const añoFactura = fechaFactura.getFullYear();
 
-                        // Verificar si es del mes actual o siguiente
+                        // Verificar si es del mes actual
                         const esDelMesActual = mesFactura === mesActual && añoFactura === añoActual;
-                        const esDelMesSiguiente = mesFactura === mesSiguiente && añoFactura === añoSiguiente;
 
-                        if (!esDelMesActual && !esDelMesSiguiente) return;
+                        if (!esDelMesActual) return;
 
                         // AHORA AMBAS VISTAS evalúan solo las facturas PENDIENTES para determinar el color
                         if (!factura.pagada) {
@@ -2255,13 +2408,21 @@
                     window.scrollTo(0, scrollPos);
                 });
 
-                this.actualizarResumenMes();
+                // Solo actualizar resumen si no estamos filtrando por búsqueda
+                // (la búsqueda solo oculta servicios, no cambia los datos reales)
+                if (!this.enModoBusqueda) {
+                    this.actualizarResumenMes();
+                }
             }
 
             aplicarFiltro(servicios) {
-                // Por ahora devuelve todos los servicios sin filtrar
-                // Puedes implementar filtros después
-                return servicios;
+                if (!this.terminoBusqueda) {
+                    return servicios;
+                }
+
+                return servicios.filter(servicio =>
+                    servicio.nombre.toLowerCase().includes(this.terminoBusqueda)
+                );
             }
 
             ordenarServicios(servicios) {
@@ -2531,6 +2692,7 @@
 
                 this.guardarDatos();
                 this.guardarEstado();
+                this.enModoBusqueda = false;
                 this.renderServicios();
                 this.cerrarModal('modal-servicio');
             }
@@ -2547,6 +2709,7 @@
 
                     this.guardarDatos();
                     this.guardarEstado();
+                    this.enModoBusqueda = false;
                     this.renderServicios();
                     this.actualizarResumenMes();
                     this.cerrarModal('modal-servicio');
@@ -2652,6 +2815,7 @@
 
                 this.guardarDatos();
                 this.guardarEstado();
+                this.enModoBusqueda = false;
                 this.cerrarModal('modal-factura');
 
                 // Re-renderizar todos los servicios para aplicar el ordenamiento
@@ -2681,6 +2845,7 @@
 
                 this.guardarDatos();
                 this.guardarEstado();
+                this.enModoBusqueda = false;
                 this.renderServicios();
 
                 if (servicioId) {
@@ -2711,6 +2876,7 @@
 
                 this.guardarDatos();
                 this.guardarEstado();
+                this.enModoBusqueda = false;
                 this.renderServicios();
 
                 if (servicioId) {
@@ -2750,6 +2916,7 @@
                     this.guardarDatos();
                     this.guardarEstado();
                     this.renderServicios();
+                    this.enModoBusqueda = false;
                     this.actualizarResumenMes();
                     this.cerrarModal('modal-factura');
                     this.mostrarToast('Factura eliminada', 'success');
@@ -3090,18 +3257,19 @@
         // Inicializar aplicación
         const app = new GestionServicios();
     </script>
-    <script src="sw-register.js"></script>
+
 
 </body>
 
 </html>
 
 <!--// ====================================================================
-    //                 NOTAS SISTEMA DeltaF VERSION 0.27
+    //                 NOTAS SISTEMA DeltaF VERSION 0.28
     // ====================================================================
     
      - PROMP:
      1) Se agrega funcion ordenar
+     2) Se agrega busqueda
 
 
      - bugs:
