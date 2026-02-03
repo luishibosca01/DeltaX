@@ -10,7 +10,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Gestión de Servicios</title>
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="./manifest.json">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d
         3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48ZGVm
         cz48bGluZWFyR3JhZGllbnQgaWQ9ImdyYWRTIiB4MT0iMCUiIHkxPSIwJSIgeDI9
@@ -616,6 +616,18 @@
             }
         }
 
+        @keyframes slideUpFade {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+
         .card-fade-in {
             animation: slideDownFade 0.5s ease-out forwards;
             opacity: 0;
@@ -905,7 +917,7 @@
             border-radius: var(--radius);
             text-align: center;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s;
         }
 
         .resumen-monto:active {
@@ -1015,6 +1027,7 @@
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
+            transition: all 0.3s ease;
         }
 
         .estadistica-item {
@@ -1023,16 +1036,11 @@
             align-items: center;
             padding: 1rem 0;
             border-bottom: 1px solid var(--border);
-
+            transition: all 0.3s ease;
         }
 
-        .estadistica-label {
-            color: var(--text-main);
-        }
-
+        .estadistica-label,
         .estadistica-valor {
-            font-size: 0.875rem;
-            font-weight: 600;
             color: var(--text-main);
         }
 
@@ -1076,7 +1084,7 @@
 
         .card-header-collapsible+.collapsible-content {
             padding-top: 0;
-            transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out, padding-top 0.4s ease-in-out;
+            transition: all 0.3s;
         }
 
         .card-header-collapsible+.collapsible-content:not(.collapsed) {
@@ -1099,7 +1107,7 @@
         .collapsible-content {
             max-height: 2000px;
             overflow: hidden;
-            transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out, padding-top 0.4s ease-in-out;
+            transition: all 0.3s;
             opacity: 0;
             visibility: hidden;
         }
@@ -1115,6 +1123,8 @@
 
         }
 
+
+
         /* Estados de la tarjeta de servicios (3 estados) */
         .servicios-actions {
             display: flex;
@@ -1124,7 +1134,7 @@
             max-height: 50px;
             opacity: 1;
             overflow: hidden;
-            transition: max-height 0.3s ease, opacity 0.3s ease, margin-bottom 0.3s ease;
+            transition: all 0.3s;
         }
 
         .servicios-actions.hidden {
@@ -1152,11 +1162,10 @@
         /* Contenedor de búsqueda */
         .search-container {
             position: relative;
-            margin-bottom: 1rem;
             max-height: 50px;
             opacity: 1;
             overflow: visible;
-            transition: max-height 0.3s ease, opacity 0.3s ease, margin-bottom 0.3s ease;
+            transition: all 0.3s;
         }
 
         #servicios-content.semi-collapsed .search-container {
@@ -1207,15 +1216,15 @@
 
         .search-clear {
             position: absolute;
-            right: 0.5rem;
-            top: 50%;
-            transform: translateY(-50%);
+            right: 0;
+            top: 0;
+            bottom: 0;
             background: transparent;
             border: none;
-            padding: 0.25rem;
+            padding: 0 1rem;
             cursor: pointer;
             color: var(--text-muted);
-            width: auto;
+            width: 3rem;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1226,9 +1235,14 @@
             color: var(--text-main);
         }
 
+        .search-clear:active {
+            transform: scale(0.9);
+        }
+
         .search-clear .icon {
-            width: 1rem;
-            height: 1rem;
+            width: 1.1rem;
+            height: 1.1rem;
+            pointer-events: none;
         }
 
         /* --- codigo css --- */
@@ -1283,7 +1297,6 @@
             } catch (e) { }
         })();
     </script>
-    <script src="sw-register.js"></script>
 
     <!-- ICONOS SVG -->
     <svg style="display: none;">
@@ -1560,8 +1573,8 @@
     <div class="menu-agregar" id="menu-agregar">
         <div class="menu-agregar-item" id="menu-agregar-servicio">
             <svg class="icon">
-                            <use href="#icon-calendar" />
-                        </svg>
+                <use href="#icon-calendar" />
+            </svg>
             <span>Agregar Servicio</span>
         </div>
         <div class="menu-agregar-item" id="menu-agregar-factura">
@@ -1726,7 +1739,7 @@
 
     <!-- Toast de notificaciones -->
     <div class="toast" id="toast"></div>
-
+    <script src="./sw-register.js"></script>
     <script>
         // ============================================
         // APLICACIÓN DE GESTIÓN DE SERVICIOS
@@ -1737,6 +1750,7 @@
                 this.servicios = [];
                 this.servicioActual = null;
                 this.facturaActual = null;
+                this.origenModalFactura = null; // 'menu' o 'servicio'
 
                 // Historial undo/redo
                 this.historial = [];
@@ -1870,7 +1884,10 @@
                 document.getElementById('modal-servicio-close').addEventListener('click', () => this.cerrarModal('modal-servicio'));
                 document.getElementById('modal-factura-close').addEventListener('click', () => {
                     this.cerrarModal('modal-factura');
-                    this.abrirModalFacturasServicio(this.servicioActual);
+                    // Solo reabrir el modal de servicio si vino desde ahí
+                    if (this.origenModalFactura === 'servicio') {
+                        this.abrirModalFacturasServicio(this.servicioActual);
+                    }
                 });
 
                 // Cerrar modales al hacer click fuera
@@ -2066,7 +2083,7 @@
                     : 0;
 
                 const resumenHTML = `
-        <div class="resumen-monto" id="resumen-toggle" style="animation: slideDownFade 0.3s ease-out;">
+        <div class="resumen-monto" id="resumen-toggle" style="animation: slideDownFade 0.5s ease-out;">
             <div class="resumen-titulo">Resumen de deuda</div>
             <div class="resumen-valor">${this.formatearMoneda(this.datosResumen.pendiente)}</div>
             <div class="resumen-label">Pendiente de pago</div>
@@ -2112,7 +2129,7 @@
                     : 0;
 
                 const resumenHTML = `
-        <div class="resumen-monto" id="resumen-toggle" style="animation: slideDownFade 0.3s ease-out;">
+        <div class="resumen-monto" id="resumen-toggle" style="animation: slideDownFade 0.5s ease-out;">
             <div class="resumen-titulo">Resumen de pagos</div>
             <div class="resumen-valor">${this.formatearMoneda(this.datosResumen.pagadoMes)}</div>
             <div class="resumen-label">Pagados Este Mes</div>
@@ -2143,10 +2160,27 @@
             }
 
             toggleResumen() {
-                if (this.mostrandoPagadoMes) {
-                    this.mostrarPendienteEnResumen();
+                const resumenActual = document.getElementById('resumen-toggle');
+
+                if (resumenActual) {
+                    // Aplicar animación de salida
+                    resumenActual.style.animation = 'slideUpFade 0.3s ease-out forwards';
+
+                    // Después de la animación, cambiar el contenido
+                    setTimeout(() => {
+                        if (this.mostrandoPagadoMes) {
+                            this.mostrarPendienteEnResumen();
+                        } else {
+                            this.mostrarPagadoEnResumen();
+                        }
+                    }, 250);
                 } else {
-                    this.mostrarPagadoEnResumen();
+                    // Si no hay elemento actual, mostrar directamente
+                    if (this.mostrandoPagadoMes) {
+                        this.mostrarPendienteEnResumen();
+                    } else {
+                        this.mostrarPagadoEnResumen();
+                    }
                 }
             }
 
@@ -2159,6 +2193,7 @@
                 // Obtener el mes seleccionado del selector (si existe)
                 const selectMes = document.getElementById('select-mes-estadisticas');
                 let mesSeleccionado, añoSeleccionado;
+                const yaExisteSelector = !!selectMes;
 
                 if (selectMes && selectMes.value) {
                     const [año, mes] = selectMes.value.split('-');
@@ -2201,13 +2236,9 @@
                     });
                 });
 
-                const estadisticasHTML = `
-    <div class="estadisticas-selector-container">
-        <select id="select-mes-estadisticas" class="estadisticas-selector">
-            ${this.generarOpcionesMeses(mesSeleccionado, añoSeleccionado)}
-        </select>
-    </div>
-    <div class="estadisticas-lista">
+                // Función para renderizar el contenido
+                const renderizarContenido = () => {
+                    const itemsHTML = `
         <div class="estadistica-item">
             <span class="estadistica-label">Monto</span>
             <span class="estadistica-valor">${this.formatearMoneda(totalMes)}</span>
@@ -2227,18 +2258,56 @@
         <div class="estadistica-item">
             <span class="estadistica-label">Vencidas</span>
             <span class="estadistica-valor">${cantidadVencidas}</span>
-        </div>                    
-    </div>
+        </div>
 `;
 
-                document.getElementById('estadisticas-mes').innerHTML = estadisticasHTML;
+                    const lista = document.querySelector('#estadisticas-mes .estadisticas-lista');
+                    if (lista) {
+                        lista.innerHTML = itemsHTML;
+                        // Trigger animación de entrada
+                        lista.style.animation = 'none';
+                        lista.style.opacity = '0';
+                        setTimeout(() => {
+                            lista.style.animation = 'slideDownFade 0.4s ease-out';
+                            lista.style.opacity = '1';
+                        }, 10);
+                    }
+                };
 
-                // Agregar event listener al select
-                const select = document.getElementById('select-mes-estadisticas');
-                if (select) {
-                    select.addEventListener('change', () => {
-                        this.actualizarEstadisticas();
-                    });
+                // Si es la primera vez (no existe el selector), crear toda la estructura
+                if (!yaExisteSelector) {
+                    const estadisticasHTML = `
+    <div class="estadisticas-selector-container">
+        <select id="select-mes-estadisticas" class="estadisticas-selector">
+            ${this.generarOpcionesMeses(mesSeleccionado, añoSeleccionado)}
+        </select>
+    </div>
+    <div class="estadisticas-lista"></div>
+`;
+                    document.getElementById('estadisticas-mes').innerHTML = estadisticasHTML;
+
+                    // Agregar event listener al select
+                    const select = document.getElementById('select-mes-estadisticas');
+                    if (select) {
+                        select.addEventListener('change', () => {
+                            this.actualizarEstadisticas();
+                        });
+                    }
+
+                    // Renderizar contenido inicial
+                    renderizarContenido();
+                } else {
+                    // Ya existe, animar salida y entrada
+                    const lista = document.querySelector('#estadisticas-mes .estadisticas-lista');
+                    if (lista) {
+                        // Animación de salida
+                        lista.style.animation = 'slideUpFade 0.3s ease-out forwards';
+
+                        // Después de la animación de salida, cambiar contenido mientras está invisible
+                        setTimeout(() => {
+                            renderizarContenido();
+                        }, 250); // Un poco antes de que termine la animación
+                    }
                 }
             }
 
@@ -2798,10 +2867,11 @@
             // GESTIÓN DE FACTURAS
             // ========================================
 
-            abrirModalFactura(servicioId, facturaId = null) {
+            abrirModalFactura(servicioId, facturaId = null, origen = 'servicio') {
                 this.cerrarModal('modal-facturas-servicio');
                 this.servicioActual = servicioId;
                 this.facturaActual = facturaId;
+                this.origenModalFactura = origen; // Guardar el origen
 
                 const modal = document.getElementById('modal-factura');
                 const titulo = document.getElementById('modal-factura-titulo');
@@ -2809,9 +2879,17 @@
                 const btnEliminar = document.getElementById('btn-eliminar-factura-modal');
                 const grupoFechaPago = document.getElementById('grupo-fecha-pago');
                 const selectServicio = document.getElementById('factura-servicio');
+                const btnVolver = document.getElementById('modal-factura-close');
 
                 form.reset();
                 grupoFechaPago.style.display = 'none';
+
+                // Cambiar texto del botón según el origen
+                if (origen === 'menu') {
+                    btnVolver.innerHTML = `<svg class="icon"><use href="#icon-cancel" /></svg> Cerrar`;
+                } else {
+                    btnVolver.innerHTML = `<svg class="icon"><use href="#icon-undo" /></svg> Volver`;
+                }
 
                 // Llenar el select de servicios
                 selectServicio.innerHTML = this.servicios.map(servicio => {
@@ -2934,7 +3012,7 @@
                 // Re-renderizar todos los servicios para aplicar el ordenamiento
                 this.renderServicios();
 
-                // Reabrir el modal del servicio correspondiente (nuevo o anterior)
+                // Siempre reabrir el modal del servicio al GUARDAR (tanto desde menú como desde servicio)
                 const servicioParaAbrir = cambiodeServicio ? servicioNuevoId : servicioAnteriorId;
                 this.abrirModalFacturasServicio(servicioParaAbrir);
 
@@ -3018,20 +3096,18 @@
             eliminarFacturaDesdeModal() {
                 if (!this.facturaActual) return;
 
-                if (confirm('¿Estás seguro de eliminar esta factura?')) {
-                    const servicio = this.servicios.find(s => s.id === this.servicioActual);
-                    if (!servicio) return;
+                const servicio = this.servicios.find(s => s.id === this.servicioActual);
+                if (!servicio) return;
 
-                    servicio.facturas = servicio.facturas.filter(f => f.id !== this.facturaActual);
+                servicio.facturas = servicio.facturas.filter(f => f.id !== this.facturaActual);
 
-                    this.guardarDatos();
-                    this.guardarEstado();
-                    this.renderServicios();
-                    this.enModoBusqueda = false;
-                    this.actualizarResumenMes();
-                    this.cerrarModal('modal-factura');
-                    this.mostrarToast('Factura eliminada', 'success');
-                }
+                this.guardarDatos();
+                this.guardarEstado();
+                this.renderServicios();
+                this.enModoBusqueda = false;
+                this.actualizarResumenMes();
+                this.cerrarModal('modal-factura');
+                this.mostrarToast('Factura eliminada', 'success');
             }
 
             obtenerUltimaFactura(servicioId) {
@@ -3345,8 +3421,8 @@
                     return;
                 }
 
-                // Abrir modal de factura con el primer servicio por defecto
-                this.abrirModalFactura(this.servicios[0].id, null);
+                // Abrir modal de factura indicando que viene del menú
+                this.abrirModalFactura(this.servicios[0].id, null, 'menu');
             }
 
             // ========================================
