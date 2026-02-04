@@ -373,23 +373,27 @@
         }
 
         .estado-vencido {
-            background: rgba(192, 93, 118, 0.15);
-            color: var(--c-red);
+            border: 1px solid var(--c-red);
+        }
+
+        .estado-urgente {
+            border: 1px solid var(--c-red);
         }
 
         .estado-proximo {
-            background: rgba(214, 175, 102, 0.15);
-            color: var(--c-gold);
+            border: 1px solid var(--c-gold);
         }
 
         .estado-pagado {
-            background: rgba(96, 172, 148, 0.15);
-            color: var(--c-green);
+            border: 1px solid var(--c-green);
+        }
+
+        .estado-lejano {
+            border: 1px solid var(--c-blue);
         }
 
         .estado-sin-facturas-mes {
-            background: rgba(139, 92, 246, 0.15);
-            color: var(--c-purple);
+            border: 1px solid var(--c-purple);
         }
 
         /* --- Modal --- */
@@ -703,7 +707,6 @@
             top: 0;
             right: -280px;
             width: 280px;
-            height: 100vh;
             height: 100dvh;
             background: var(--bg-card);
             box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
@@ -718,7 +721,7 @@
         @media (max-width: 480px) {
             .menu-ajustes {
                 right: -75vw;
-                width: 75vw;
+                width: 60vw;
                 max-width: 280px;
             }
 
@@ -760,7 +763,8 @@
             transition: color 0.2s;
         }
 
-        .menu-item:hover {
+        .menu-item:hover,
+        .btn-cerrar-menu:hover {
             color: var(--text-muted);
         }
 
@@ -2200,7 +2204,7 @@
 
                 const resumenHTML = `
         <div class="resumen-monto" id="resumen-toggle" style="animation: slideDownFade 0.5s ease-out;">
-            <div class="resumen-titulo">Resumen de deuda</div>
+            <div class="resumen-titulo">Resumen de Facturas</div>
             <div class="resumen-valor">${this.formatearMoneda(this.datosResumen.pendiente)}</div>
             <div class="resumen-label">Pendiente de pago</div>
             <div class="resumen-progreso">
@@ -2246,9 +2250,9 @@
 
                 const resumenHTML = `
         <div class="resumen-monto" id="resumen-toggle" style="animation: slideDownFade 0.5s ease-out;">
-            <div class="resumen-titulo">Resumen de pagos</div>
+            <div class="resumen-titulo">Resumen de Pagos</div>
             <div class="resumen-valor">${this.formatearMoneda(this.datosResumen.pagadoMes)}</div>
-            <div class="resumen-label">Pagados Este Mes</div>
+            <div class="resumen-label">Pagado este mes</div>
             <div class="resumen-progreso">
                 <div class="resumen-progreso-barra" style="width: ${porcentajePagado}%"></div>
             </div>
@@ -2628,7 +2632,7 @@
                                 estado = `Vence en ${diasRestantes} días`;
                                 claseEstado = 'proximo';
                             } else {
-                                estado = `Vence ${fechaTexto}`;
+                                estado = `Vence en ${diasRestantes} días`;
                                 claseEstado = 'lejano';
                             }
 
@@ -3031,6 +3035,11 @@
                 form.reset();
                 inputFechaPago.disabled = true;
                 btnTogglePagada.classList.remove('pagada');
+                // Resetear explícitamente el icono al estado inicial (no pagado)
+                const iconUse = btnTogglePagada.querySelector('use');
+                if (iconUse) {
+                    iconUse.setAttribute('href', '#icon-card');
+                }
 
                 // Cambiar texto del botón según el origen
                 if (origen === 'menu') {
@@ -3063,6 +3072,10 @@
                             if (factura.pagada) {
                                 btnTogglePagada.classList.add('pagada');
                                 inputFechaPago.disabled = false;
+                                // Actualizar el icono a estado pagado
+                                if (iconUse) {
+                                    iconUse.setAttribute('href', '#icon-cancel');
+                                }
                                 if (factura.fechaPago) {
                                     inputFechaPago.value = factura.fechaPago;
                                 } else {
@@ -3684,13 +3697,8 @@
     // ====================================================================
     
      - CAMBIOS:
-     1) Max 30 caracteres al crear o editar un servicio
-     2) Si hay una factura vencida en el modal de facturas del servicio, 
-     ahora dice vencida
-     3) la lista de servicios ahora solo muestra las facturas del mes 
-     actual en adelante, la que vence primero
-     4) si no hay facturas por vencer en el mes actual pero si hay en otro mes,
-     el servicio agrega la etiqueta "sin facturas esta mes"
+     1) se achica el menu de ajustes en moviles
+     2) rediseño general de algunas partes y correcion menores de bugs
 
 
      - BUGS:
