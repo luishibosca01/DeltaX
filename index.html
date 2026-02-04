@@ -123,7 +123,7 @@
 
         .header {
             background: var(--bg-header);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(4px);
             padding: 0.6rem;
             box-shadow: var(--shadow);
             position: sticky;
@@ -291,7 +291,7 @@
             opacity: 1;
             overflow: hidden;
             margin-top: 1rem;
-            transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin 0.3s ease-out, padding 0.3s ease-out;
+            transition: all 0.3s;
         }
 
         /* Evitar saltos de scroll en móviles durante búsqueda */
@@ -312,7 +312,7 @@
         }
 
         .servicio-item:active {
-            transform: scale(0.98);
+            transform: scale(0.99);
         }
 
         .servicio-item.vencido {
@@ -405,9 +405,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0);
-            backdrop-filter: blur(0px);
-            -webkit-backdrop-filter: blur(0px);
+
             z-index: 100;
             align-items: center;
             justify-content: center;
@@ -417,9 +415,9 @@
 
         .modal.active {
             display: flex;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
         }
 
         .modal-content {
@@ -431,7 +429,7 @@
             max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            animation: slideUp 0.3s ease;
+            animation: slideUp 0.2s ease-in-out;
         }
 
         .modal-header {
@@ -609,15 +607,6 @@
         }
 
         /* --- Animaciones --- */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
 
         @keyframes slideUp {
             from {
@@ -656,7 +645,7 @@
         }
 
         .card-fade-in {
-            animation: slideDownFade 0.5s ease-out forwards;
+            animation: slideDownFade 0.3s ease-out forwards;
             opacity: 0;
         }
 
@@ -742,9 +731,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
             z-index: 100;
 
         }
@@ -836,9 +825,13 @@
             z-index: 999;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 0.75rem;
             white-space: pre-line;
             pointer-events: none;
+            max-width: 90%;
+            min-width: 300px;
+            text-align: center;
         }
 
         .toast.show {
@@ -1536,7 +1529,7 @@
                 </svg>
                 Cerrar menú
             </button>
-            <div class="menu-version">Version 0.34</div> <!-- DeltaF -->
+            <div class="menu-version">Version 0.36</div> <!-- DeltaF -->
         </div>
     </div>
 
@@ -1843,6 +1836,9 @@
 
                 this.terminoBusqueda = '';
                 this.enModoBusqueda = false;
+
+                // Timer para el toast
+                this.toastTimeout = null;
 
                 this.init();
             }
@@ -2204,7 +2200,7 @@
                     : 0;
 
                 const resumenHTML = `
-        <div class="resumen-monto" id="resumen-toggle" style="animation: slideDownFade 0.5s ease-out;">
+        <div class="resumen-monto" id="resumen-toggle" style="animation: slideDownFade 0.2s ease-out;">
             <div class="resumen-titulo">Resumen de Facturas</div>
             <div class="resumen-valor">${this.formatearMoneda(this.datosResumen.pendiente)}</div>
             <div class="resumen-label">Pendiente de pago</div>
@@ -2250,7 +2246,7 @@
                     : 0;
 
                 const resumenHTML = `
-        <div class="resumen-monto" id="resumen-toggle" style="animation: slideDownFade 0.5s ease-out;">
+        <div class="resumen-monto" id="resumen-toggle" style="animation: slideDownFade 0.2s ease-out;">
             <div class="resumen-titulo">Resumen de Pagos</div>
             <div class="resumen-valor">${this.formatearMoneda(this.datosResumen.pagadoMes)}</div>
             <div class="resumen-label">Pagado este mes</div>
@@ -2285,7 +2281,7 @@
 
                 if (resumenActual) {
                     // Aplicar animación de salida
-                    resumenActual.style.animation = 'slideUpFade 0.3s ease-out forwards';
+                    resumenActual.style.animation = 'slideUpFade 0.2s ease-out forwards';
 
                     // Después de la animación, cambiar el contenido
                     setTimeout(() => {
@@ -2294,7 +2290,7 @@
                         } else {
                             this.mostrarPagadoEnResumen();
                         }
-                    }, 250);
+                    }, 190);
                 } else {
                     // Si no hay elemento actual, mostrar directamente
                     if (this.mostrandoPagadoMes) {
@@ -2386,17 +2382,20 @@
                     if (lista) {
                         lista.innerHTML = itemsHTML;
                         // Trigger animación de entrada
-                        lista.style.animation = 'none';
                         lista.style.opacity = '0';
                         setTimeout(() => {
-                            lista.style.animation = 'slideDownFade 0.4s ease-out';
+                            lista.style.animation = 'slideDownFade 0.2s ease-out';
                             lista.style.opacity = '1';
                         }, 10);
                     }
                 };
 
-                // Si es la primera vez (no existe el selector), crear toda la estructura
-                if (!yaExisteSelector) {
+                // Si no hay datos, forzar regeneración completa
+                const hayDatos = this.servicios.length > 0 &&
+                    this.servicios.some(s => s.facturas && s.facturas.length > 0);
+
+                // Si es la primera vez O no hay datos, crear/recrear toda la estructura
+                if (!yaExisteSelector || !hayDatos) {
                     const estadisticasHTML = `
     <div class="estadisticas-selector-container">
         <select id="select-mes-estadisticas" class="estadisticas-selector">
@@ -2418,16 +2417,28 @@
                     // Renderizar contenido inicial
                     renderizarContenido();
                 } else {
+                    // Si hay datos y el selector ya existe, solo actualizar las opciones
+                    const selectActual = document.getElementById('select-mes-estadisticas');
+                    if (selectActual) {
+                        const valorActual = selectActual.value;
+                        selectActual.innerHTML = this.generarOpcionesMeses(mesSeleccionado, añoSeleccionado);
+
+                        // Intentar mantener la selección anterior si existe
+                        if (Array.from(selectActual.options).some(opt => opt.value === valorActual)) {
+                            selectActual.value = valorActual;
+                        }
+                    }
+
                     // Ya existe, animar salida y entrada
                     const lista = document.querySelector('#estadisticas-mes .estadisticas-lista');
                     if (lista) {
                         // Animación de salida
-                        lista.style.animation = 'slideUpFade 0.3s ease-out forwards';
+                        lista.style.animation = 'slideUpFade 0.2s ease-out forwards';
 
                         // Después de la animación de salida, cambiar contenido mientras está invisible
                         setTimeout(() => {
                             renderizarContenido();
-                        }, 250); // Un poco antes de que termine la animación
+                        }, 190); // Un poco antes de que termine la animación
                     }
                 }
             }
@@ -2570,6 +2581,61 @@
             // GESTIÓN DE SERVICIOS
             // ========================================
 
+            calcularEstadoServicio(servicio) {
+                const ultimaFactura = this.obtenerUltimaFactura(servicio.id);
+                let estado = '', claseEstado = '', montoTexto = '-', fechaTexto = '';
+
+                if (ultimaFactura) {
+                    montoTexto = this.formatearMoneda(ultimaFactura.monto);
+                    fechaTexto = this.formatearFecha(ultimaFactura.fecha);
+
+                    if (ultimaFactura.pagada) {
+                        const fechaPagoTexto = ultimaFactura.fechaPago
+                            ? this.formatearFecha(ultimaFactura.fechaPago)
+                            : 'Sin fecha';
+                        estado = `Pagado ${fechaPagoTexto}`;
+                        claseEstado = 'pagado';
+                    } else {
+                        const hoy = new Date();
+                        hoy.setHours(0, 0, 0, 0);
+                        const vencimiento = new Date(ultimaFactura.fecha + 'T00:00:00');
+                        vencimiento.setHours(0, 0, 0, 0);
+                        const diasRestantes = Math.ceil((vencimiento - hoy) / (1000 * 60 * 60 * 24));
+
+                        if (diasRestantes < 0) {
+                            estado = 'Vencido';
+                            claseEstado = 'vencido';
+                        } else if (diasRestantes === 0) {
+                            estado = 'Vence hoy';
+                            claseEstado = 'urgente';
+                        } else if (diasRestantes === 1) {
+                            estado = 'Vence mañana';
+                            claseEstado = 'urgente';
+                        } else if (diasRestantes <= 3) {
+                            estado = `Vence en ${diasRestantes} días`;
+                            claseEstado = 'urgente';
+                        } else if (diasRestantes <= 7) {
+                            estado = `Vence en ${diasRestantes} días`;
+                            claseEstado = 'proximo';
+                        } else {
+                            estado = `Vence en ${diasRestantes} días`;
+                            claseEstado = 'lejano';
+                        }
+                    }
+                } else {
+                    // Cuando obtenerUltimaFactura retorna null
+                    if (servicio.facturas && servicio.facturas.length > 0) {
+                        estado = 'Sin facturas este mes';
+                        claseEstado = 'sin-facturas-mes';
+                    } else {
+                        estado = 'Sin facturas';
+                        claseEstado = 'sin-facturas';
+                    }
+                }
+
+                return { estado, claseEstado, montoTexto, fechaTexto };
+            }
+
             renderServicios() {
                 const lista = document.getElementById('servicios-lista');
                 if (!lista) return;
@@ -2578,15 +2644,16 @@
 
                 if (this.servicios.length === 0) {
                     lista.innerHTML = `
-            <div class="empty-state">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                    <line x1="12" y1="9" x2="12" y2="15"/>
-                    <line x1="9" y1="12" x2="15" y2="12"/>
-                </svg>
-                <p>No hay servicios registrados<br>Presiona el botón + para agregar uno</p>
-            </div>
-        `;
+                      <div class="empty-state">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                              <line x1="12" y1="9" x2="12" y2="15"/>
+                              <line x1="9" y1="12" x2="15" y2="12"/>
+                          </svg>
+                          <p>No hay servicios registrados<br>Presiona el botón + para agregar uno</p>
+                      </div>
+                  `;
+                    this.actualizarResumenMes();
                     return;
                 }
 
@@ -2597,74 +2664,20 @@
                 const serviciosOrdenados = this.ordenarServicios(serviciosFiltrados);
 
                 lista.innerHTML = serviciosOrdenados.map(servicio => {
-                    const ultimaFactura = this.obtenerUltimaFactura(servicio.id);
-                    let estado = '', claseEstado = '', montoTexto = '-', fechaTexto = '';
-
-                    if (ultimaFactura) {
-                        montoTexto = this.formatearMoneda(ultimaFactura.monto);
-                        fechaTexto = this.formatearFecha(ultimaFactura.fecha);
-
-                        if (ultimaFactura.pagada) {
-                            const fechaPagoTexto = ultimaFactura.fechaPago
-                                ? this.formatearFecha(ultimaFactura.fechaPago)
-                                : 'Sin fecha';
-                            estado = `Pagado ${fechaPagoTexto}`;
-                            claseEstado = 'pagado';
-                        } else {
-                            const hoy = new Date();
-                            hoy.setHours(0, 0, 0, 0);
-                            const vencimiento = new Date(ultimaFactura.fecha + 'T00:00:00');
-                            vencimiento.setHours(0, 0, 0, 0);
-                            const diasRestantes = Math.ceil((vencimiento - hoy) / (1000 * 60 * 60 * 24));
-
-                            if (diasRestantes < 0) {
-                                estado = 'Vencido';
-                                claseEstado = 'vencido';
-                            } else if (diasRestantes === 0) {
-                                estado = 'Vence hoy';
-                                claseEstado = 'urgente';
-                            } else if (diasRestantes === 1) {
-                                estado = 'Vence mañana';
-                                claseEstado = 'urgente';
-                            } else if (diasRestantes === 2) {
-                                estado = 'Vence en 2 días';
-                                claseEstado = 'urgente';
-                            } else if (diasRestantes <= 7) {
-                                estado = `Vence en ${diasRestantes} días`;
-                                claseEstado = 'proximo';
-                            } else {
-                                estado = `Vence en ${diasRestantes} días`;
-                                claseEstado = 'lejano';
-                            }
-
-                        }
-                    }
-                    else {
-                        // Cuando obtenerUltimaFactura retorna null
-                        // Verificar si el servicio tiene facturas en general
-                        if (servicio.facturas && servicio.facturas.length > 0) {
-                            // Tiene facturas, pero no en el mes actual/siguiente
-                            estado = 'Sin facturas este mes';
-                            claseEstado = 'sin-facturas-mes';
-                        } else {
-                            // No tiene facturas en absoluto
-                            estado = 'Sin facturas';
-                            claseEstado = 'sin-facturas';
-                        }
-                    }
+                    const { estado, claseEstado, montoTexto, fechaTexto } = this.calcularEstadoServicio(servicio);
 
                     return `
-    <div class="servicio-wrapper" data-id="${this.escaparAtributoHTML(servicio.id)}">
-        <div class="servicio-item ${claseEstado}" data-id="${this.escaparAtributoHTML(servicio.id)}">
-            <div class="servicio-nombre">${this.escaparHTML(servicio.nombre)}</div>
-            <div class="servicio-info">
-                <span class="servicio-monto">${montoTexto}</span>
-                ${fechaTexto ? `<span class="servicio-fecha">${fechaTexto}</span>` : ''}
-            </div>
-            ${estado ? `<span class="servicio-estado estado-${claseEstado}">${estado}</span>` : ''}
-        </div>
-    </div>
-`;
+                   <div class="servicio-wrapper" data-id="${this.escaparAtributoHTML(servicio.id)}">
+                      <div class="servicio-item ${claseEstado}" data-id="${this.escaparAtributoHTML(servicio.id)}">
+                          <div class="servicio-nombre">${this.escaparHTML(servicio.nombre)}</div>
+                           <div class="servicio-info">
+                              <span class="servicio-monto">${montoTexto}</span>
+                               ${fechaTexto ? `<span class="servicio-fecha">${fechaTexto}</span>` : ''}
+                           </div>
+                        ${estado ? `<span class="servicio-estado estado-${claseEstado}">${estado}</span>` : ''}
+                       </div>
+                   </div>
+                 `;
                 }).join('');
 
                 // Eventos de click en servicios
@@ -2789,48 +2802,8 @@
                 const wrapper = document.querySelector(`.servicio-wrapper[data-id="${servicioId}"]`);
                 if (!wrapper) return;
 
-                // Actualizar header del servicio
-                const ultimaFactura = this.obtenerUltimaFactura(servicio.id);
-                let estado = '', claseEstado = '', montoTexto = 'Sin facturas', fechaTexto = '';
-
-                if (ultimaFactura) {
-                    montoTexto = this.formatearMoneda(ultimaFactura.monto);
-                    fechaTexto = this.formatearFecha(ultimaFactura.fecha);
-
-                    if (ultimaFactura.pagada) {
-                        const fechaPagoTexto = ultimaFactura.fechaPago
-                            ? this.formatearFecha(ultimaFactura.fechaPago)
-                            : 'Sin fecha';
-                        estado = `Pagado ${fechaPagoTexto}`;
-                        claseEstado = 'pagado';
-                    } else {
-                        const hoy = new Date();
-                        hoy.setHours(0, 0, 0, 0);
-                        const vencimiento = new Date(ultimaFactura.fecha + 'T00:00:00');
-                        vencimiento.setHours(0, 0, 0, 0);
-                        const diasRestantes = Math.ceil((vencimiento - hoy) / (1000 * 60 * 60 * 24));
-
-                        if (diasRestantes < 0) {
-                            estado = 'Vencido';
-                            claseEstado = 'vencido';
-                        } else if (diasRestantes === 0) {
-                            estado = 'Vence hoy';
-                            claseEstado = 'urgente';
-                        } else if (diasRestantes === 1) {
-                            estado = 'Vence mañana';
-                            claseEstado = 'urgente';
-                        } else if (diasRestantes === 2) {
-                            estado = 'Vence en 2 días';
-                            claseEstado = 'urgente';
-                        } else if (diasRestantes <= 7) {
-                            estado = `Vence en ${diasRestantes} días`;
-                            claseEstado = 'proximo';
-                        } else {
-                            estado = `Vence ${fechaTexto}`;
-                            claseEstado = 'lejano';
-                        }
-                    }
-                }
+                // Actualizar header del servicio usando la función compartida
+                const { estado, claseEstado, montoTexto, fechaTexto } = this.calcularEstadoServicio(servicio);
 
                 // Actualizar el servicio-item manteniendo el estado expanded
                 const servicioItem = wrapper.querySelector('.servicio-item');
@@ -2973,6 +2946,12 @@
                     // Editar servicio existente
                     const servicio = this.servicios.find(s => s.id === this.servicioActual);
                     if (servicio) {
+                        // Verificar si hubo cambios
+                        if (servicio.nombre === nombre) {
+                            this.mostrarToast('Sin cambios', 'info');
+                            this.cerrarModal('modal-servicio');
+                            return;
+                        }
                         servicio.nombre = nombre;
                         this.mostrarToast('Servicio actualizado', 'success');
                     }
@@ -3143,6 +3122,19 @@
                     return;
                 }
 
+                // Validar que no exista otra factura con la misma fecha en el mismo servicio
+                const servicioDestino = this.servicios.find(s => s.id === servicioSeleccionadoId);
+                if (servicioDestino) {
+                    const facturaConMismaFecha = servicioDestino.facturas.find(f =>
+                        f.fecha === fecha && f.id !== this.facturaActual
+                    );
+
+                    if (facturaConMismaFecha) {
+                        this.mostrarToast('❌ Ya existe una factura con esta fecha de vencimiento para este servicio', 'error');
+                        return;
+                    }
+                }
+
                 // Verificar si el servicio cambió
                 const servicioAnteriorId = this.servicioActual;
                 const servicioNuevoId = servicioSeleccionadoId;
@@ -3172,6 +3164,17 @@
                                 }
                             } else {
                                 // Actualizar en el mismo servicio
+                                // Verificar si hubo cambios
+                                if (factura.monto === monto &&
+                                    factura.tipo === tipo &&
+                                    factura.fecha === fecha &&
+                                    factura.pagada === estaPagada &&
+                                    factura.fechaPago === fechaPago) {
+                                    this.mostrarToast('Sin cambios', 'info');
+                                    this.cerrarModal('modal-factura');
+                                    this.abrirModalFacturasServicio(servicioAnteriorId);
+                                    return;
+                                }
                                 factura.monto = monto;
                                 factura.tipo = tipo;
                                 factura.fecha = fecha;
@@ -3673,6 +3676,7 @@
                                 this.guardarDatos();
                                 this.guardarEstado();
                                 this.renderServicios();
+                                this.actualizarEstadisticas();
                                 this.mostrarToast(`Importados ${cantidad} servicios`, 'success');
                             }
                         } catch (error) {
@@ -3700,6 +3704,7 @@
                         this.guardarEstado();
                         this.renderServicios();
                         this.actualizarBotonesHistorial();
+                        this.actualizarEstadisticas();
                         this.mostrarToast('Todos los datos han sido eliminados', 'success');
                         this.cerrarMenuAjustes();
                     }
@@ -3841,13 +3846,27 @@
 
             mostrarToast(mensaje, tipo = 'success') {
                 const toast = document.getElementById('toast');
-                toast.textContent = mensaje;
-                toast.className = `toast ${tipo}`;
-                toast.classList.add('show');
 
+                // Cancelar el timeout anterior si existe
+                if (this.toastTimeout) {
+                    clearTimeout(this.toastTimeout);
+                }
+
+                // Ocultar el toast actual si está visible
+                toast.classList.remove('show');
+
+                // Pequeño delay para permitir que la animación de salida se complete
                 setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 3000);
+                    toast.textContent = mensaje;
+                    toast.className = `toast ${tipo}`;
+                    toast.classList.add('show');
+
+                    // Guardar el nuevo timeout
+                    this.toastTimeout = setTimeout(() => {
+                        toast.classList.remove('show');
+                        this.toastTimeout = null;
+                    }, 3000);
+                }, 150);
             }
         }
 
@@ -3861,7 +3880,7 @@
 </html>
 
 <!--// ====================================================================
-    //                 NOTAS SISTEMA DeltaF VERSION 0.34
+    //                 NOTAS SISTEMA DeltaF VERSION 0.36
     // ====================================================================
     
      - CAMBIOS:
