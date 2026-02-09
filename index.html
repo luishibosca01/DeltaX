@@ -134,7 +134,7 @@
         }
 
         .header h1 {
-            font-size: 1.25rem;
+            font-size: 1.5rem;
             color: var(--text-main);
             display: flex;
             align-items: center;
@@ -268,13 +268,13 @@
             font-size: 1.5rem;
             padding: 0;
             background: var(--c-blue);
-            color: var(--text-main);
+            color: var(--c-white);
             position: fixed;
-            bottom: 2rem;
+            bottom: 3rem;
             right: 2rem;
-            box-shadow: 0 0 15px 12px rgba(255, 255, 255, 0.15);
-            border: 1px solid var(--text-main);
-            z-index: 80
+            box-shadow: 0 0 5px 2px rgba(106, 159, 252, 0.503);
+            z-index: 80;
+            animation: slideUp 1s ease-in-out 1;
         }
 
         #btn-filter,
@@ -1639,12 +1639,20 @@
             <rect x="2" y="7" width="20" height="14" rx="2" ry="2" class="icon-line" stroke="currentColor"></rect>
             <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" class="icon-line" stroke="currentColor"></path>
         </symbol>
+        <symbol id="icon-users" viewBox="0 0 24 24">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" class="icon-line" stroke="currentColor"></path>
+            <circle cx="9" cy="7" r="4" class="icon-line" stroke="currentColor"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" class="icon-line" stroke="currentColor"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" class="icon-line" stroke="currentColor"></path>
+        </symbol>
     </svg>
 
     <!-- Header -->
     <header class="header">
-        <h1> Servicios </h1>
+        <h1> <span>Servicios</span>
+        </h1>
         <div class="header-actions">
+            <span id="perfil-indicador"></span>
             <button class="icon-btn" id="btn-ajustes" aria-label="Ajustes">
                 <svg class="icon">
                     <use href="#icon-menu" />
@@ -1662,18 +1670,17 @@
                 <use href="#icon-menu" />
             </svg> Ajustes</div>
         <div class="menu-content">
+            <div class="menu-item" id="menu-perfiles">
+                <svg class="icon">
+                    <use href="#icon-users" />
+                </svg>
+                <span>Perfiles</span>
+            </div>
             <div class="menu-item" id="menu-tema">
                 <svg class="icon">
                     <use href="#icon-moon" />
                 </svg>
                 <span>Tema</span>
-            </div>
-            <div class="menu-item" id="menu-toggle-ingresos">
-                <svg class="icon">
-                    <use href="#icon-dollar" />
-                </svg>
-                <span>Ingresos</span>
-                <span id="ingresos-indicator" style="margin-left: auto; font-weight: 600;">✓</span>
             </div>
             <div class="menu-item" id="menu-exportar">
                 <svg class="icon">
@@ -1702,7 +1709,13 @@
                 </svg>
                 <span>Borrar todo</span>
             </div>
-
+            <div class="menu-item" id="menu-toggle-ingresos">
+                <svg class="icon">
+                    <use href="#icon-dollar" />
+                </svg>
+                <span>Ingresos</span>
+                <span id="ingresos-indicator" style="margin-left: auto; font-weight: 600;">✓</span>
+            </div>
             <div class="menu-item" id="menu-informacion">
                 <svg class="icon">
                     <use href="#icon-info" />
@@ -1727,12 +1740,12 @@
         <div class="main-grid">
             <!-- Columna izquierda (sidebar) -->
             <div class="sidebar-left">
-                <div class="card card-fade-in" style="animation-delay: 0.1s;">
+                <div class="card card-fade-in" style="animation-delay: 0s;">
                     <div id="resumen-mes"></div>
                 </div>
 
                 <!-- Tarjeta de Estadísticas -->
-                <div class="card card-fade-in" style="animation-delay: 0.2s;">
+                <div class="card card-fade-in" style="animation-delay: 0.1s;">
                     <h2 class="card-header-collapsible" id="estadisticas-header">
                         <span>
                             <svg class="icon" viewBox="0 0 24 24">
@@ -1751,7 +1764,7 @@
                 </div>
 
                 <!-- Tarjeta de Calculador -->
-                <div class="card card-fade-in" style="animation-delay: 0.25s;">
+                <div class="card card-fade-in" style="animation-delay: 0.2s;">
                     <h2 class="card-header-collapsible" id="calculador-header">
                         <span>
                             <svg class="icon" viewBox="0 0 24 24">
@@ -2305,6 +2318,65 @@
         </div>
     </div>
 
+    <!-- Modal de Perfiles -->
+    <div class="modal" id="modal-perfiles">
+        <div class="modal-overlay" id="modal-perfiles-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Gestión de Perfiles</h2>
+            </div>
+            <div class="modal-body">
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <div id="perfiles-lista"></div>
+                    <div class="form-actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                        <button type="submit" id="btn-crear-perfil" onclick="app.abrirModalCrearPerfil()"
+                            style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                            <svg class="icon" style="width: 18px; height: 18px;">
+                                <use href="#icon-plus" />
+                            </svg>
+                            Crear nuevo perfil
+                        </button>
+                        <button type="button" onclick="app.cerrarModal('modal-perfiles')">
+                            <svg class="icon">
+                                <use href="#icon-cancel" />
+                            </svg>Cerrar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Crear/Editar Perfil -->
+    <div class="modal" id="modal-editar-perfil">
+        <div class="modal-overlay" id="modal-editar-perfil-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="titulo-editar-perfil">Editar Perfil</h2>
+            </div>
+            <div class="modal-body">
+                <form id="form-perfil" onsubmit="app.guardarPerfil(event)">
+                    <div class="form-group">
+                        <label>Nombre del perfil</label>
+                        <input type="text" id="perfil-nombre" maxlength="20" required
+                            placeholder="Ej: Trabajo, Personal, Hogar...">
+                    </div>
+                    <div class="form-actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                        <button type="submit">
+                            <svg class="icon">
+                                <use href="#icon-save" />
+                            </svg>Guardar</button>
+                        <button type="button" class="btn btn-secondary" onclick="app.cancelarEditarPerfil()">
+                            <svg class="icon">
+                                <use href="#icon-cancel" />
+                            </svg>Volver
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Información Calculador -->
     <div class="modal" id="modal-informacion">
         <div class="modal-content" style="max-width: 600px;">
@@ -2452,6 +2524,11 @@
 
         class GestionServicios {
             constructor() {
+                // Sistema de perfiles - NUEVO
+                this.perfilActivo = localStorage.getItem('gestion_servicios_perfil_activo') || 'default';
+                this.perfiles = this.cargarPerfiles();
+
+                // Datos y estado
                 this.servicios = [];
                 this.servicioActual = null;
                 this.facturaActual = null;
@@ -2465,10 +2542,8 @@
                 // Configuración
                 this.STORAGE_KEY = 'gestion_servicios_data';
                 this.THEME_KEY = 'gestion_servicios_theme';
-
                 this.mostrandoPagadoMes = localStorage.getItem('resumen-mostrar-pagado') === 'true';
                 this.datosResumen = { pendiente: 0, pagadoMes: 0, totalPeriodo: 0 };
-
                 this.serviciosCollapseState = 'expanded'; // 'expanded', 'semi-collapsed', 'collapsed'
 
                 // Timer para doble click en toggle de servicios
@@ -2477,15 +2552,16 @@
 
                 // Ordenamiento de lista de servicios
                 this.ordenActual = localStorage.getItem('gestion_servicios_orden') || 'nombre';
-
                 this.terminoBusqueda = '';
                 this.enModoBusqueda = false;
 
                 // Timer para el toast
                 this.toastTimeout = null;
-
                 this.INGRESOS_KEY = 'ingresos-habilitado';
                 this.SERVICIO_INGRESOS_ID = 'servicio-ingresos-especial';
+
+                // Cargar datos del perfil activo - NUEVO
+                this.cargarDatosPerfilActivo();
 
                 this.init();
             }
@@ -2500,7 +2576,6 @@
             // ========================================
 
             init() {
-                this.cargarDatos();
                 this.cargarTema();
                 this.actualizarResumenMes();
                 this.renderServicios();
@@ -2582,7 +2657,359 @@
                             this.enModoBusqueda = false;
                         }, 100);
                     }
+
                 });
+
+            }
+
+            // ========================================
+            // GESTIÓN DE PERFILES
+            // ========================================
+
+            cargarPerfiles() {
+                try {
+                    const perfilesGuardados = localStorage.getItem('gestion_servicios_perfiles');
+                    if (perfilesGuardados) {
+                        return JSON.parse(perfilesGuardados);
+                    }
+                } catch (error) {
+                    console.error('Error al cargar perfiles:', error);
+                }
+
+                // Perfil por defecto
+                return {
+                    'default': {
+                        id: 'default',
+                        nombre: 'Principal',
+                        creado: new Date().toISOString()
+                    }
+                };
+            }
+
+            guardarPerfiles() {
+                try {
+                    localStorage.setItem('gestion_servicios_perfiles', JSON.stringify(this.perfiles));
+                } catch (error) {
+                    console.error('Error al guardar perfiles:', error);
+                    this.mostrarToast('Error al guardar perfiles', 'error');
+                }
+            }
+
+            cancelarEditarPerfil() {
+                this.cerrarModal('modal-editar-perfil');
+                this.abrirModalPerfiles();
+            }
+
+            cargarDatosPerfilActivo() {
+                try {
+                    const key = `gestion_servicios_datos_${this.perfilActivo}`;
+                    const datos = localStorage.getItem(key);
+                    if (datos) {
+                        this.servicios = JSON.parse(datos);
+                    } else {
+                        this.servicios = [];
+                        // Guardar array vacío para que no se confunda con datos viejos
+                        localStorage.setItem(key, JSON.stringify([]));
+                    }
+                } catch (error) {
+                    console.error('Error al cargar datos del perfil:', error);
+                    this.servicios = [];
+                }
+            }
+
+            guardarDatosPerfilActivo() {
+                try {
+                    const key = `gestion_servicios_datos_${this.perfilActivo}`;
+                    localStorage.setItem(key, JSON.stringify(this.servicios));
+                } catch (error) {
+                    console.error('Error al guardar datos del perfil:', error);
+                    this.mostrarToast('Error al guardar datos', 'error');
+                }
+            }
+
+            cambiarPerfil(perfilId) {
+                if (perfilId === this.perfilActivo) return;
+
+                // Guardar datos del perfil actual
+                this.guardarDatosPerfilActivo();
+
+                // Cambiar al nuevo perfil
+                this.perfilActivo = perfilId;
+                localStorage.setItem('gestion_servicios_perfil_activo', perfilId);
+
+                // Cargar datos del nuevo perfil
+                this.cargarDatosPerfilActivo();
+
+                // Actualizar interfaz
+                this.renderServicios();
+                this.cerrarModal('modal-perfiles');
+                this.cerrarMenuAjustes();
+
+                const nombrePerfil = this.perfiles[perfilId].nombre;
+                this.mostrarToast(`Cambiado a perfil: ${nombrePerfil}`, 'success');
+            }
+
+            abrirModalPerfiles() {
+                this.renderListaPerfiles();
+                this.cerrarMenuAjustes();
+                this.abrirModal('modal-perfiles');
+            }
+
+            renderListaPerfiles() {
+                const lista = document.getElementById('perfiles-lista');
+                const perfilesArray = Object.values(this.perfiles);
+
+                const btnCrear = document.getElementById('btn-crear-perfil');
+                if (perfilesArray.length >= 3) {
+                    btnCrear.disabled = true;
+                    btnCrear.style.opacity = '0.5';
+                    btnCrear.style.cursor = 'not-allowed';
+                } else {
+                    btnCrear.disabled = false;
+                    btnCrear.style.opacity = '1';
+                    btnCrear.style.cursor = 'pointer';
+                    btnCrear.title = '';
+                }
+
+                lista.innerHTML = perfilesArray.map(perfil => {
+                    const esActivo = perfil.id === this.perfilActivo;
+                    const esDefault = perfil.id === 'default';
+
+                    // Contar datos del perfil
+                    const key = `gestion_servicios_datos_${perfil.id}`;
+                    let cantidadServicios = 0;
+                    try {
+                        const datos = localStorage.getItem(key);
+                        if (datos) {
+                            const servicios = JSON.parse(datos);
+                            cantidadServicios = servicios.length;
+                        }
+                    } catch (e) { }
+
+                    return `
+                        <div class="perfil-item ${esActivo ? 'activo' : ''}" 
+                             style="border: 2px solid ${esActivo ? 'var(--c-blue)' : 'var(--border)'}; 
+                                    border-radius: var(--radius); 
+                                    padding: 1rem; 
+                                    background: var(--bg-card);
+                                    display: flex;
+                                    justify-content: space-between;
+                                    align-items: center;
+                                    cursor: pointer;"
+                             onclick="app.cambiarPerfil('${perfil.id}')">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+                                    ${this.escaparHTML(perfil.nombre)}
+                                    ${esActivo ? '<span style="color: var(--c-blue); font-size: 0.9rem;">● Activo</span>' : ''}
+                                </div>
+                                <div style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.25rem;">
+                                    ${cantidadServicios} servicio${cantidadServicios !== 1 ? 's' : ''}
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;" onclick="event.stopPropagation();">
+                                ${!esDefault ? `
+                                    <button class="icon-btn" onclick="app.eliminarPerfil('${perfil.id}')" 
+                                            title="Eliminar perfil" style="color: var(--c-red);">
+                                        <svg class="icon">
+                                            <use href="#icon-trash" />
+                                        </svg>
+                                    </button>
+                                ` : ''}
+                                <button class="icon-btn" onclick="app.abrirModalEditarPerfil('${perfil.id}')" 
+                                        title="Editar perfil">
+                                    <svg class="icon">
+                                        <use href="#icon-edit" />
+                                    </svg>
+                                </button>
+                             </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            abrirModalCrearPerfil() {
+                this.perfilEditando = null;
+                document.getElementById('titulo-editar-perfil').textContent = 'Crear Perfil';
+                document.getElementById('form-perfil').reset();
+                this.cerrarModal('modal-perfiles');
+                this.abrirModal('modal-editar-perfil');
+            }
+
+            abrirModalEditarPerfil(perfilId) {
+                this.perfilEditando = perfilId;
+                const perfil = this.perfiles[perfilId];
+                document.getElementById('titulo-editar-perfil').textContent = 'Editar Perfil';
+                document.getElementById('perfil-nombre').value = perfil.nombre;
+                this.cerrarModal('modal-perfiles');
+                this.abrirModal('modal-editar-perfil');
+            }
+
+            guardarPerfil(e) {
+                e.preventDefault();
+
+                const nombre = document.getElementById('perfil-nombre').value.trim();
+
+                if (!nombre) {
+                    this.mostrarToast('El nombre es requerido', 'error');
+                    return;
+                }
+
+                // Validar nombre duplicado
+                const nombreExiste = Object.values(this.perfiles).some(perfil =>
+                    perfil.nombre.toLowerCase() === nombre.toLowerCase() &&
+                    perfil.id !== this.perfilEditando
+                );
+
+                if (nombreExiste) {
+                    this.mostrarToast('Ya existe un perfil con ese nombre', 'error');
+                    return;
+                }
+
+                if (this.perfilEditando) {
+                    // Editar perfil existente
+                    this.perfiles[this.perfilEditando].nombre = nombre;
+
+                    // Si editamos el perfil activo, actualizar el header
+                    if (this.perfilEditando === this.perfilActivo) {
+                        this.renderServicios();
+                    }
+
+                    this.mostrarToast('Perfil actualizado', 'success');
+                } else {
+                    // Crear nuevo perfil
+                    if (Object.keys(this.perfiles).length >= 3) {
+                        this.mostrarToast('Máximo 3 perfiles permitidos', 'error');
+                        return;
+                    }
+
+                    const nuevoId = 'perfil_' + Date.now();
+                    this.perfiles[nuevoId] = {
+                        id: nuevoId,
+                        nombre: nombre,
+                        creado: new Date().toISOString()
+                    };
+
+                    // Inicializar datos vacíos para el nuevo perfil
+                    const key = `gestion_servicios_datos_${nuevoId}`;
+                    localStorage.setItem(key, JSON.stringify([]));
+
+                    this.mostrarToast('Perfil creado', 'success');
+                }
+
+                this.guardarPerfiles();
+                this.cerrarModal('modal-editar-perfil');
+                this.abrirModalPerfiles();
+            }
+
+            eliminarPerfil(perfilId) {
+                if (perfilId === 'default') {
+                    this.mostrarToast('No puedes eliminar el perfil principal', 'error');
+                    return;
+                }
+
+                const perfil = this.perfiles[perfilId];
+
+                if (!confirm(`¿Eliminar el perfil "${perfil.nombre}"? Todos sus datos se perderán.`)) {
+                    return;
+                }
+
+                // Si es el perfil activo, cambiar al default
+                if (perfilId === this.perfilActivo) {
+                    this.cambiarPerfil('default');
+                }
+
+                // Eliminar datos del perfil
+                const key = `gestion_servicios_datos_${perfilId}`;
+                localStorage.removeItem(key);
+
+                // Eliminar perfil
+                delete this.perfiles[perfilId];
+                this.guardarPerfiles();
+
+                this.mostrarToast('Perfil eliminado', 'success');
+                this.renderListaPerfiles();
+            }
+
+            exportarPerfil(perfilId) {
+                try {
+                    const perfil = this.perfiles[perfilId];
+                    const key = `gestion_servicios_datos_${perfilId}`;
+                    const servicios = JSON.parse(localStorage.getItem(key) || '[]');
+
+                    const datos = {
+                        version: '1.0',
+                        fecha: new Date().toISOString(),
+                        perfil: perfil.nombre,
+                        servicios: servicios
+                    };
+
+                    const json = JSON.stringify(datos, null, 2);
+                    const blob = new Blob([json], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `perfil_${perfil.nombre}_${this.obtenerFechaLocal()}.json`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+
+                    this.mostrarToast('Perfil exportado', 'success');
+                } catch (error) {
+                    console.error('Error al exportar perfil:', error);
+                    this.mostrarToast('Error al exportar perfil', 'error');
+                }
+            }
+
+            importarPerfil(perfilId) {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'application/json';
+
+                input.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        try {
+                            const datos = JSON.parse(event.target.result);
+
+                            if (!datos.servicios || !Array.isArray(datos.servicios)) {
+                                throw new Error('Formato de archivo inválido');
+                            }
+
+                            if (!this.validarDatos(datos.servicios)) {
+                                throw new Error('Datos inválidos en el archivo');
+                            }
+
+                            if (!confirm(`¿Reemplazar todos los datos del perfil "${this.perfiles[perfilId].nombre}"?`)) {
+                                return;
+                            }
+
+                            // Guardar datos en el perfil
+                            const key = `gestion_servicios_datos_${perfilId}`;
+                            localStorage.setItem(key, JSON.stringify(datos.servicios));
+
+                            // Si es el perfil activo, recargar
+                            if (perfilId === this.perfilActivo) {
+                                this.cargarDatosPerfilActivo();
+                                this.renderServicios();
+                            }
+
+                            this.mostrarToast('Datos importados al perfil', 'success');
+                            this.renderListaPerfiles();
+                        } catch (error) {
+                            console.error('Error al importar:', error);
+                            this.mostrarToast('Error: ' + error.message, 'error');
+                        }
+                    };
+
+                    reader.readAsText(file);
+                });
+
+                input.click();
             }
 
             setupModalCloseListeners(modalId, closeButtonIds) {
@@ -2665,6 +3092,11 @@
                     if (this.origenModalFactura === 'servicio') {
                         this.abrirModalFacturasServicio(this.servicioActual);
                     }
+                });
+
+                // Menú de perfiles
+                document.getElementById('menu-perfiles').addEventListener('click', () => {
+                    this.abrirModalPerfiles();
                 });
 
                 // Event listener para el botón volver del grid (modo agregar)
@@ -3746,6 +4178,13 @@
             }
 
             renderServicios() {
+                const indicador = document.getElementById('perfil-indicador');
+                if (indicador && this.perfilActivo !== 'default') {
+                    indicador.textContent = `${this.perfiles[this.perfilActivo].nombre}`;
+                } else if (indicador) {
+                    indicador.textContent = '';
+                }
+
                 const lista = document.getElementById('servicios-lista');
                 if (!lista) return;
 
@@ -4761,36 +5200,10 @@
 
             guardarDatos() {
                 try {
-                    // Verificar espacio antes de guardar
-                    const espacio = this.verificarEspacioDisponible();
-
-                    if (espacio.critico) {
-                        console.warn(`⚠️ Almacenamiento crítico: ${espacio.tamaño.toFixed(2)} MB`);
-                        this.mostrarToast('⚠️ Almacenamiento casi lleno. Exporta tus datos.', 'error');
-                    } else if (espacio.advertencia) {
-                        console.warn(`⚠️ Almacenamiento en advertencia: ${espacio.tamaño.toFixed(2)} MB`);
-                    }
-
-                    const datos = JSON.stringify(this.servicios);
-                    localStorage.setItem(this.STORAGE_KEY, datos);
-
-                    return true;
+                    this.guardarDatosPerfilActivo();
                 } catch (error) {
-                    if (error.name === 'QuotaExceededError') {
-                        console.error('❌ Cuota de almacenamiento excedida');
-                        this.mostrarToast('❌ Sin espacio. Elimina datos antiguos o exporta.', 'error');
-
-                        // Intentar exportar automáticamente como respaldo
-                        setTimeout(() => {
-                            if (confirm('¿Deseas exportar tus datos como respaldo?')) {
-                                this.exportarDatos();
-                            }
-                        }, 1000);
-                    } else {
-                        console.error('Error al guardar datos:', error);
-                        this.mostrarToast('Error al guardar datos', 'error');
-                    }
-                    return false;
+                    console.error('Error al guardar datos:', error);
+                    this.mostrarToast('Error al guardar datos', 'error');
                 }
             }
 
