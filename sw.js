@@ -18,7 +18,7 @@ self.addEventListener('install', event => {
         });
       })
   );
-  self.skipWaiting();
+  // ❌ QUITAR self.skipWaiting() de aquí
 });
 
 // Activación
@@ -35,10 +35,11 @@ self.addEventListener('activate', event => {
       );
     })
   );
+  self.skipWaiting(); // ✅ MOVER aquí
   return self.clients.claim();
 });
 
-// Fetch
+// Fetch (sin cambios)
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
 
