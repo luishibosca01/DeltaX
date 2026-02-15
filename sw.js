@@ -1,4 +1,4 @@
-const CACHE_NAME = 'deltaF-v1.01-cache';
+const CACHE_NAME = 'deltaF-v0.60-cache';
 const urlsToCache = [
   './',
   './index.html',
@@ -18,7 +18,7 @@ self.addEventListener('install', event => {
         });
       })
   );
-  // ❌ QUITAR self.skipWaiting() de aquí
+  // SIN skipWaiting aquí
 });
 
 // Activación
@@ -35,7 +35,6 @@ self.addEventListener('activate', event => {
       );
     })
   );
-  self.skipWaiting(); // ✅ MOVER aquí
   return self.clients.claim();
 });
 
