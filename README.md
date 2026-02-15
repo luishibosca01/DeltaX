@@ -1,2 +1,2 @@
 # DeltaX
-Pagina para llevar u nregistro de las facturas a pagar
+Pagina para llevar un registro de las facturas a pagar
